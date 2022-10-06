@@ -42,5 +42,4 @@ class Memory {
 void generateAdapters() {
   Hive.registerAdapter<LifetimeTag>(LifetimeTagAdapter());
   Hive.registerAdapter<Memory>(MemoryAdapter());
-
 }

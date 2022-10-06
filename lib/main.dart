@@ -30,7 +30,9 @@ Future<void> main(List<String> args) async {
       theme: ThemeData.dark(),
       home: TakePictureScreen(
         camera: firstCamera,
-      )));
+      )
+    )
+  );
 }
 
 // A screen that allows users to take a picture using a given camera.
@@ -146,22 +148,26 @@ class DisplayPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Display the Picture')),
-        body: ValueListenableBuilder(
-            valueListenable: Hive.box<Memory>(memoryBoxName).listenable(),
-            builder: (BuildContext context, Box<Memory> box, _) {
-              // If there are no images, return info text.
-              if (box.values.isEmpty) {
-                return const Center(child: Text("No images to show."));
-              }
-              return GridView.builder(
-                  itemCount: box.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2),
-                  itemBuilder: (BuildContext context, index) {
-                    Memory memory = box.getAt(index) as Memory;
-                    return Image.memory(memory.pictureBytes);
-                  });
-            }));
+      appBar: AppBar(title: const Text('Display the Picture')),
+      body: ValueListenableBuilder(
+        valueListenable: Hive.box<Memory>(memoryBoxName).listenable(),
+        builder: (BuildContext context, Box<Memory> box, _) {
+          // If there are no images, return info text.
+          if (box.values.isEmpty) {
+            return const Center(child: Text("No images to show."));
+          }
+          return GridView.builder(
+            itemCount: box.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2
+            ),
+            itemBuilder: (BuildContext context, index) {
+              Memory memory = box.getAt(index) as Memory;
+              return Image.memory(memory.pictureBytes);
+            }
+          );
+        }
+      )
+    );
   }
 }
