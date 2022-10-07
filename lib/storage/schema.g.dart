@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'storage.dart';
+part of 'schema.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
