@@ -1,4 +1,7 @@
 
+import 'dart:developer';
+
+import 'package:didit/camera/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
@@ -30,11 +33,11 @@ class CameraScreenState extends State<CameraScreen> {
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg
     );
-    cameraController.addListener(() {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    // cameraController.addListener(() {
+    //   if (mounted) {
+    //     setState(() {});
+    //   }
+    // });
 
     // TODO: Present error and go back to the home screen
     if (cameraController.value.hasError) {
@@ -83,6 +86,7 @@ class CameraScreenState extends State<CameraScreen> {
 
   /// Loop through the flash modes.
   void incrementFlashMode() {
+    log("Updating the flash mode, current state: ${flashMode.name}");
     // Modulo allows for looping back to the first value
     final nextIndex = (flashMode.index + 1) % FlashMode.values.length;
     flashMode = FlashMode.values[nextIndex];
@@ -90,6 +94,7 @@ class CameraScreenState extends State<CameraScreen> {
   }
 
   void incrementLifetimeTag() {
+    log("Updating the lifetime tag, current state: ${lifetimeTag.name}");
     final nextIndex = (lifetimeTag.index + 1) % LifetimeTag.values.length;
     lifetimeTag = LifetimeTag.values[nextIndex];
   }
@@ -126,10 +131,9 @@ class CameraScreenState extends State<CameraScreen> {
           }
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(camera_helpers.getFlashIcon(flashMode)),
-            onPressed: incrementFlashMode,
-          )
+          FlashButton(
+            parentCallback: incrementFlashMode,
+          ),
         ],
       ),
       body: FutureBuilder<void>(
@@ -155,11 +159,9 @@ class CameraScreenState extends State<CameraScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-
                   // Tag button
-                  TextButton(
-                    onPressed: incrementLifetimeTag,
-                    child: camera_helpers.getTagText(lifetimeTag),
+                  TagButton(
+                    parentCallback: incrementLifetimeTag,
                   ),
 
                   // Shutter button
