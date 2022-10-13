@@ -1,67 +1,30 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-import 'memories.dart';
+import 'globals.dart';
 
-void main() => runApp(const CupertinoTabBarApp());
+// Database
+import 'storage/schema.dart';
 
-class CupertinoTabBarApp extends StatelessWidget {
-  const CupertinoTabBarApp({super.key});
+// Widgets
+import 'gallery.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    return const CupertinoApp(
-      theme: CupertinoThemeData(brightness: Brightness.light),
-      home: CupertinoTabBarExample(),
-    );
-  }
-}
+Future<void> main(List<String> args) async {
+  // Ensure that plugin services are initialized so that `availableCameras()`
+  // can be called before `runApp()`
+  WidgetsFlutterBinding.ensureInitialized();
 
-class CupertinoTabBarExample extends StatelessWidget {
-  const CupertinoTabBarExample({super.key});
+  // Prepare the DB
+  await Hive.initFlutter();
+  generateAdapters();
+  Hive.openBox<Memory>(Globals.dbName);
 
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoTabScaffold(
-      tabBar: CupertinoTabBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.collections),
-            label: 'Memories',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.list_number),
-            label: 'Lists',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.camera_fill),
-            label: 'Create',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.tag),
-            label: 'Tags',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.settings),
-            label: 'Settings'
-          )
-        ],
-      ),
-      tabBuilder: (BuildContext context, int index) {
-        switch (index) {
-          case 0:
-            return const MemoriesPage();
-          default:
-            break;
-        }
-        return CupertinoTabView(
-          builder: (BuildContext context) {
-            return Center(
-              child: Text('Content of tab $index'),
-            );
-          },
-        );
-      },
-    );
-  }
+  // Launch the app
+  runApp(MaterialApp(
+      theme: ThemeData.dark(),
+      home: const GalleryScreen(),
+    )
+  );
 }
