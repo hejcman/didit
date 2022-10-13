@@ -5,8 +5,13 @@ import 'package:didit/camera/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
+// Camera helpers
 import 'helpers.dart' as camera_helpers;
 
+// Common widgets
+import '../common/orientation_widget.dart';
+
+// Storage
 import '../storage/adapters.dart';
 import '../storage/schema.dart';
 
@@ -131,8 +136,11 @@ class CameraScreenState extends State<CameraScreen> {
           }
         ),
         actions: <Widget>[
-          FlashButton(
-            parentCallback: incrementFlashMode,
+          // Rotating flash button
+          OrientationWidget(
+            child: FlashButton(
+              parentCallback: incrementFlashMode,
+            ),
           ),
         ],
       ),
@@ -159,11 +167,10 @@ class CameraScreenState extends State<CameraScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  // Tag button
-                  TagButton(
-                    parentCallback: incrementLifetimeTag,
+                  // Rotating tag button
+                  OrientationWidget(
+                      child: TagButton(parentCallback: incrementLifetimeTag)
                   ),
-
                   // Shutter button
                   Expanded(
                     child: IconButton(
@@ -188,13 +195,14 @@ class CameraScreenState extends State<CameraScreen> {
                       },
                     ),
                   ),
-                  // Lens picker button
-
+                  // Rotating lens picker button
+                  OrientationWidget(
                   // Camera switcher
-                  IconButton(
-                    onPressed: switchCamera,
-                    icon: Icon(
-                      camera_helpers.getCameraIcon(cameras[currentCameraIndex].lensDirection)
+                    child: IconButton(
+                      onPressed: switchCamera,
+                      icon: Icon(
+                        camera_helpers.getCameraIcon(cameras[currentCameraIndex].lensDirection)
+                      )
                     )
                   )
                 ],
