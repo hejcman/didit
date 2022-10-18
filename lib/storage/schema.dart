@@ -20,8 +20,23 @@ const lifetimeTags = <LifetimeTag, String> {
   LifetimeTag.thirtyDays: "30 Days",
 };
 
+extension LifetimeTagExtension on LifetimeTag {
+
+  /// Convert a lifetime tag to Duration
+  Duration toDuration() {
+    switch (this) {
+      case LifetimeTag.oneDay:
+        return const Duration(days: 1);
+      case LifetimeTag.sevenDays:
+        return const Duration(days: 7);
+      case LifetimeTag.thirtyDays:
+        return const Duration(days: 30);
+    }
+  }
+}
+
 @HiveType(typeId: 1)
-class Memory {
+class Memory extends HiveObject {
   /// The time the photo was created. This should not change once created.
   @HiveField(0)
   DateTime created;
@@ -37,6 +52,14 @@ class Memory {
 
   /// Constructor
   Memory(this.created, this.pictureBytes, this.lifetimeTag);
+
+  /// Check if the current Memory is outdated.
+  bool isOutdated() {
+    DateTime expirationTime = created.add(lifetimeTag.toDuration());
+    DateTime currentTime = DateTime.now();
+
+    return currentTime.isAfter(expirationTime) ? true : false;
+  }
 }
 
 /// Generate adapters to convert Dart classes to ones stored in the Hive DB.

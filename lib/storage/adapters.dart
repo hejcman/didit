@@ -18,6 +18,29 @@ void createMemory(Memory memory) {
 /// Delete the memory object from the database.
 void deleteMemory(Memory memory) {
   var box = getMemoryBox();
-  box.delete(memory);
+  box.delete(memory.key);
   box.flush();
+}
+
+/// Delete any memories which are outdated
+void deleteOutdatedMemories() {
+  var box = getMemoryBox();
+  var outdatedMemories = box.values.where((memory) => memory.isOutdated());
+  for (Memory memory in outdatedMemories) {
+    deleteMemory(memory);
+  }
+  box.flush();
+}
+
+/// Get memories based on their lifetime tag.
+List<Memory> getMemories(LifetimeTag lifetimeTag) {
+  var box = getMemoryBox();
+
+  // If there are no memories, return empty list
+  if (box.isEmpty) {
+    return <Memory>[];
+  }
+
+  // Otherwise, get all the relevant memories
+  return box.values.where((memory) => memory.lifetimeTag == lifetimeTag).toList(growable: false);
 }
