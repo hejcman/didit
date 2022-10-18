@@ -54,7 +54,7 @@ class GalleryScreen extends StatelessWidget {
                         onTap: () async {
                           await Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) =>
-                                  PhotoDetail(photo: memory.pictureBytes)));
+                                  PhotoDetail(box: box, index: index)));
                         },
                         child: Image.memory(memory.pictureBytes),
                       );
