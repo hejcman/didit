@@ -21,3 +21,23 @@ void deleteMemory(Memory memory) {
   box.delete(memory);
   box.flush();
 }
+
+/// Delete any memories which are outdated
+void deleteOutdatedMemories() {
+  var box = getMemoryBox();
+  var outdatedMemories = box.values.where((memory) => memory.isOutdated());
+  box.deleteAll(outdatedMemories);
+}
+
+/// Get memories based on their lifetime tag.
+List<Memory> getMemories(LifetimeTag lifetimeTag) {
+  var box = getMemoryBox();
+
+  // If there are no memories, return empty list
+  if (box.isEmpty) {
+    return <Memory>[];
+  }
+
+  // Otherwise, get all the relevant memories
+  return box.values.where((memory) => memory.lifetimeTag == lifetimeTag).toList(growable: false);
+}
