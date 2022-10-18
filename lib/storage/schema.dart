@@ -36,7 +36,7 @@ extension LifetimeTagExtension on LifetimeTag {
 }
 
 @HiveType(typeId: 1)
-class Memory {
+class Memory extends HiveObject {
   /// The time the photo was created. This should not change once created.
   @HiveField(0)
   DateTime created;

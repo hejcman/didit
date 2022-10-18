@@ -1,4 +1,5 @@
 
+import 'package:didit/storage/adapters.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -43,17 +44,20 @@ class GalleryScreen extends StatelessWidget {
             valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
             builder: (BuildContext context, Box<Memory> box, _) {
               // If there are no images, return info text.
-              if (box.values.isEmpty) {
+              if (box.isEmpty) {
                 return const Center(child: Text("No images to show."));
               }
+              // Delete any outdated memories
+              deleteOutdatedMemories();
+              var memories = getMemories(LifetimeTag.oneDay);
+
               return GridView.builder(
-                itemCount: box.length,
+                itemCount: memories.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2
                 ),
                 itemBuilder: (BuildContext context, index) {
-                  Memory memory = box.getAt(index) as Memory;
-                  return Image.memory(memory.pictureBytes);
+                  return Image.memory(memories[index].pictureBytes);
                 }
               );
             }
