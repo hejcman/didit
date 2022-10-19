@@ -25,7 +25,7 @@ void deleteMemory(Memory memory) {
 /// Delete any memories which are outdated
 void deleteOutdatedMemories() {
   var box = getMemoryBox();
-  var outdatedMemories = box.values.where((memory) => memory.isOutdated());
+  var outdatedMemories = box.values.where((memory) => memory.isExpired());
   for (Memory memory in outdatedMemories) {
     deleteMemory(memory);
   }
