@@ -1,20 +1,50 @@
+import 'dart:typed_data';
+import 'package:didit/camera/camera.dart';
+import 'package:didit/storage/adapters.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../storage/schema.dart';
+
+import '../globals.dart';
+
+import '../storage/schema.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  final List<int> categories = [1,7, 30];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child:
+      body: SafeArea(
+          child: FutureBuilder(
+        future: Hive.openBox<Memory>(Globals.dbName),
+        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const CircularProgressIndicator();
+          }
+          return ValueListenableBuilder(
+              valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
+              builder: (BuildContext context, Box<Memory> box, _) {
+                if (box.isEmpty) {
+                  return const Center(child: Text("No images to show."));
+                }
 
-      ListView.builder(
-          itemCount: categories.length,
-          itemBuilder: (BuildContext context, int index) {
-            return OneCategory(categoryName: "${categories[index]} ${categories[index] == 1 ? "day": "days"}");
-          })),
+                deleteOutdatedMemories();
+                final List<LifetimeTag> categories = lifetimeTags.keys.toList();
+                lifetimeTags.values.toList();
+                return ListView.builder(
+                  padding: EdgeInsets.all(20),
+                    itemCount: categories.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final memories = getMemories(categories[index]);
+                      return OneCategory(
+                        categoryName: "${lifetimeTags[categories[index]]}",
+                        memories: memories,
+                      );
+                    });
+              });
+        },
+      )),
       floatingActionButton: CaptureButton(),
     );
   }
@@ -26,8 +56,9 @@ class CaptureButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
-      onPressed: () {
-        // Add your onPressed code here!
+      onPressed: () async {
+        await Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const CameraScreen()));
       },
       label: const Text('Capture'),
       icon: const Icon(Icons.camera_alt),
@@ -37,57 +68,58 @@ class CaptureButton extends StatelessWidget {
 }
 
 class OneCategory extends StatelessWidget {
-  OneCategory({super.key, required this.categoryName, this.images});
+  OneCategory({super.key, required this.categoryName, this.memories});
 
   final String categoryName;
-  final List<Image>? images;
+  final List<Memory>? memories;
 
   @override
   Widget build(BuildContext context) {
+    if (memories == null) {
+      return Text("error");
+    }
+
     return Column(children: [
       Row(
-        children: [const Icon(Icons.flag), Text(categoryName)],
+        children: [
+          const Icon(Icons.flag,
+          color: Colors.amber,),
+          Text(categoryName)
+        ],
       ),
       Container(
         height: 200,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: 10,
-          itemBuilder: (BuildContext context, int index) {
-            return PhotosColumn();
-          },
-        ),
+        child: GridView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: memories?.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2),
+            itemBuilder: (BuildContext context, index) {
+              Memory memory = memories![index];
+
+              return CustomPhotoTile(memory: memory);
+            }),
       )
     ]);
   }
 }
 
-class PhotosColumn extends StatelessWidget {
-  PhotosColumn({super.key, this.images});
-  final List<Image>? images;
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: [MyPhoto(), MyPhoto()]);
-  }
-}
+class CustomPhotoTile extends StatelessWidget {
+  CustomPhotoTile({super.key, required this.memory});
 
-class MyPhoto extends StatelessWidget {
-  MyPhoto({super.key,this.image1, this.image2});
-  Image? image1;
-  Image? image2;
+  Memory memory;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
         width: 100,
         height: 100,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-
-          child: Image.asset(
-            "assets/images/1.jpg",
-            fit: BoxFit.fill,
-          ),
-        ));
+            borderRadius: BorderRadius.circular(5),
+            child: Image.memory(
+              memory.pictureBytes,
+              fit: BoxFit.fill,
+            )));
   }
 }

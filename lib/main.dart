@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:didit/home/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -23,8 +24,8 @@ Future<void> main(List<String> args) async {
 
   // Launch the app
   runApp(MaterialApp(
-      theme: ThemeData.dark(),
-      home: const GalleryScreen(),
+      theme: ThemeData.light(),
+      home: HomeScreen(),
     )
   );
 }
