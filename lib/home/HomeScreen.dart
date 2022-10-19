@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
                 final List<LifetimeTag> categories = lifetimeTags.keys.toList();
                 lifetimeTags.values.toList();
                 return ListView.builder(
-                  padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20),
                     itemCount: categories.length,
                     itemBuilder: (BuildContext context, int index) {
                       final memories = getMemories(categories[index]);
@@ -82,8 +82,10 @@ class OneCategory extends StatelessWidget {
     return Column(children: [
       Row(
         children: [
-          const Icon(Icons.flag,
-          color: Colors.amber,),
+          const Icon(
+            Icons.flag,
+            color: Colors.amber,
+          ),
           Text(categoryName)
         ],
       ),

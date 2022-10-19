@@ -24,8 +24,7 @@ Future<void> main(List<String> args) async {
 
   // Launch the app
   runApp(MaterialApp(
-      theme: ThemeData.light(),
-      home: HomeScreen(),
-    )
-  );
+    theme: ThemeData.light(),
+    home: HomeScreen(),
+  ));
 }
