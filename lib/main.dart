@@ -1,3 +1,4 @@
+import 'package:didit/home/HomeScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -22,46 +23,47 @@ class CupertinoTabBarExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoTabScaffold(
-      tabBar: CupertinoTabBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.collections),
-            label: 'Memories',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.list_number),
-            label: 'Lists',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.camera_fill),
-            label: 'Create',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.tag),
-            label: 'Tags',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.settings),
-            label: 'Settings'
-          )
-        ],
-      ),
-      tabBuilder: (BuildContext context, int index) {
-        switch (index) {
-          case 0:
-            return const MemoriesPage();
-          default:
-            break;
-        }
-        return CupertinoTabView(
-          builder: (BuildContext context) {
-            return Center(
-              child: Text('Content of tab $index'),
-            );
-          },
-        );
-      },
-    );
+    return HomeScreen();
+    // CupertinoTabScaffold(
+    //   tabBar: CupertinoTabBar(
+    //     items: const <BottomNavigationBarItem>[
+    //       BottomNavigationBarItem(
+    //         icon: Icon(CupertinoIcons.collections),
+    //         label: 'Memories',
+    //       ),
+    //       BottomNavigationBarItem(
+    //         icon: Icon(CupertinoIcons.list_number),
+    //         label: 'Lists',
+    //       ),
+    //       BottomNavigationBarItem(
+    //         icon: Icon(CupertinoIcons.camera_fill),
+    //         label: 'Create',
+    //       ),
+    //       BottomNavigationBarItem(
+    //         icon: Icon(CupertinoIcons.tag),
+    //         label: 'Tags',
+    //       ),
+    //       BottomNavigationBarItem(
+    //         icon: Icon(CupertinoIcons.settings),
+    //         label: 'Settings'
+    //       )
+    //     ],
+    //   ),
+    //   tabBuilder: (BuildContext context, int index) {
+    //     switch (index) {
+    //       case 0:
+    //         return const MemoriesPage();
+    //       default:
+    //         break;
+    //     }
+    //     return CupertinoTabView(
+    //       builder: (BuildContext context) {
+    //         return Center(
+    //           child: Text('Content of tab $index'),
+    //         );
+    //       },
+    //     );
+    //   },
+    // );
   }
 }
