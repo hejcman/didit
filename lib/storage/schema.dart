@@ -53,9 +53,14 @@ class Memory extends HiveObject {
   /// Constructor
   Memory(this.created, this.pictureBytes, this.lifetimeTag);
 
-  /// Check if the current Memory is outdated.
-  bool isOutdated() {
-    DateTime expirationTime = created.add(lifetimeTag.toDuration());
+  /// Return the DateTime when the Memory will be considered expired
+  DateTime getExpiration() {
+    return created.add(lifetimeTag.toDuration());
+  }
+
+  /// Check if the current Memory is expired.
+  bool isExpired() {
+    DateTime expirationTime = getExpiration();
     DateTime currentTime = DateTime.now();
 
     return currentTime.isAfter(expirationTime) ? true : false;
