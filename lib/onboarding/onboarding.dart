@@ -161,7 +161,7 @@ class Onboard {
 
 final List<OnBoardingSlide> onBoardingSlidesData = [
   const OnBoardingSlide(
-    lottie: '~/assets/lottie/take-a-photo.json',
+    lottie: 'assets/lottie/take-a-photo.json',
     title: "Capture images of things you often forget about",
     description: "Did I turn my stove off ?! We've all been there"
         "...just take a picture and have a solid proof for your future self!",
