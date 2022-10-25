@@ -47,6 +47,8 @@ dependencies:
   path_provider:
   path:
   native_device_orientation: ^1.1.4
+  shared_preferences: ^2.0.15
+  lottie: ^1.4.3
 
 dev_dependencies:
   flutter_test:
