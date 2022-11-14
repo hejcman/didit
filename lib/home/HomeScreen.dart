@@ -12,6 +12,8 @@ import '../storage/schema.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
+  final List<Color> flagColors = [Colors.deepPurple.shade300, Colors.deepPurple.shade500,Colors.deepPurple.shade700, Colors.deepPurple.shade800];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +42,7 @@ class HomeScreen extends StatelessWidget {
                       return OneCategory(
                         categoryName: "${lifetimeTags[categories[index]]}",
                         memories: memories,
+                        flagColor: flagColors[index],
                       );
                     });
               });
@@ -62,16 +65,16 @@ class CaptureButton extends StatelessWidget {
       },
       label: const Text('Capture'),
       icon: const Icon(Icons.camera_alt),
-      backgroundColor: Colors.blue,
     );
   }
 }
 
 class OneCategory extends StatelessWidget {
-  OneCategory({super.key, required this.categoryName, this.memories});
-
   final String categoryName;
   final List<Memory>? memories;
+  Color flagColor;
+
+  OneCategory({super.key, required this.categoryName, this.memories, this.flagColor = Colors.black});
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +85,9 @@ class OneCategory extends StatelessWidget {
     return Column(children: [
       Row(
         children: [
-          const Icon(
+          Icon(
             Icons.flag,
-            color: Colors.amber,
+            color: flagColor,
           ),
           Text(categoryName)
         ],

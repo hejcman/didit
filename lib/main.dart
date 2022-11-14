@@ -24,7 +24,29 @@ Future<void> main(List<String> args) async {
 
   // Launch the app
   runApp(MaterialApp(
-    theme: ThemeData.light(),
+    theme: ThemeData(
+      primaryColorLight: Colors.deepPurpleAccent[100],
+      primaryColorDark: Colors.purple[900],
+
+      colorScheme: ColorScheme(
+        //defined
+        brightness: Brightness.light,
+        primary: Colors.deepPurple.shade400,
+        onPrimary: Colors.white, //text on primary
+        secondary: Colors.deepOrange.shade100,
+        onSecondary: Colors.black87, // text on secondary
+
+        //dont know, where they are
+        error: Colors.pink,
+        onError: Colors.pink,
+        background: Colors.white,
+        onBackground: Colors.pink,
+        surface: Colors.pink,
+        onSurface: Colors.pink,
+      )
+    ),
     home: HomeScreen(),
   ));
+
 }
+
