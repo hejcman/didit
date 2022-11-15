@@ -47,7 +47,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-        backgroundColor: Colors.teal[100],
+        backgroundColor: Theme.of(context).colorScheme.background,
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -83,7 +83,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                           },
                           // style: ElevatedButton.styleFrom(shape: const CircleBorder()),
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color?>(Colors.teal[700]),
+                            //backgroundColor: MaterialStateProperty.all<Color?>(Colors.teal[700]),
                             shape: MaterialStateProperty.all<CircleBorder?>(const CircleBorder()),
                           ),
                           child: Icon(
@@ -142,7 +142,7 @@ class DotIndicator extends StatelessWidget {
       height: isActive ? sizeActive.toDouble() : sizeSmall.toDouble(),
       width: isActive ? sizeActive.toDouble() : sizeSmall.toDouble(),
       decoration: BoxDecoration(
-        color: Colors.teal[600],
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: const BorderRadius.all(Radius.circular(12)),
       ),
     );
@@ -209,9 +209,9 @@ class OnBoardingSlide extends StatelessWidget {
           title,
           textAlign: TextAlign.center,
           // style: Theme.of(context).textTheme.headline4!.copyWith(fontWeight: FontWeight.w500),
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: Theme.of(context).colorScheme.onBackground,
             fontSize: 32,
           ),
         ),
@@ -219,8 +219,8 @@ class OnBoardingSlide extends StatelessWidget {
         Text(
           description,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.black45,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onBackground,
             fontSize: 20.0,
           )
         ),
