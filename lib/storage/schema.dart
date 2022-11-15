@@ -14,7 +14,7 @@ enum LifetimeTag {
   thirtyDays,
 }
 
-const lifetimeTags = <LifetimeTag, String> {
+const lifetimeTags = <LifetimeTag, String>{
   LifetimeTag.oneDay: "1 Day",
   LifetimeTag.sevenDays: "7 Days",
   LifetimeTag.thirtyDays: "30 Days",
@@ -58,6 +58,16 @@ class Memory extends HiveObject {
     return created.add(lifetimeTag.toDuration());
   }
 
+  String getTimeToExpire() {
+    Duration timeToExpire =
+        created.add(lifetimeTag.toDuration()).difference(DateTime.now());
+    if (timeToExpire.inDays == 0) {
+      return "${timeToExpire.inHours} hours";
+    } else {
+      return "${timeToExpire.inDays} days";
+    }
+  }
+  
   /// Check if the current Memory is expired.
   bool isExpired() {
     DateTime expirationTime = getExpiration();

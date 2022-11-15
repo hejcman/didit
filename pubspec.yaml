@@ -50,6 +50,12 @@ dependencies:
   shared_preferences: ^2.0.15
   lottie: ^1.4.3
 
+  # Dependencies for image detail
+  photo_view: ^0.14.0
+
+  # Dependencies for sharing images
+  share_plus: ^6.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

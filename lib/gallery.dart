@@ -1,4 +1,4 @@
-
+import 'package:didit/photo_detail.dart';
 import 'package:didit/storage/adapters.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -61,10 +61,33 @@ class GalleryScreen extends StatelessWidget {
                 }
               );
             }
-          );
-        }
-      )
-    );
+            // Rebuild the gallery on changes in the database
+            return ValueListenableBuilder(
+                valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
+                builder: (BuildContext context, Box<Memory> box, _) {
+                  // If there are no images, return info text.
+                  if (box.values.isEmpty) {
+                    return const Center(child: Text("No images to show."));
+                  }
+                  return GridView.builder(
+                    itemCount: box.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
+                    itemBuilder: (BuildContext context, index) {
+                      Memory memory = box.getAt(index) as Memory;
+                      return InkWell(
+                        onTap: () async {
+                          await Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  PhotoDetail(box: box, index: index)));
+                        },
+                        child: Image.memory(memory.pictureBytes),
+                      );
+                    },
+                  );
+                });
+          },
+        ));
   }
 }
-
