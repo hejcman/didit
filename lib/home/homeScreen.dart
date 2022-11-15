@@ -12,9 +12,18 @@ import '../storage/schema.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
+  final List<Color> flagColors = [Colors.deepPurple.shade100, Colors.deepPurple.shade400,Colors.brown.shade700, Colors.deepOrange.shade900];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Image.asset(
+          "assets/logo/didit_logo_light.png",
+          height: 35,
+        ),
+      ),
+
       body: SafeArea(
           child: FutureBuilder(
         future: Hive.openBox<Memory>(Globals.dbName),
@@ -40,6 +49,7 @@ class HomeScreen extends StatelessWidget {
                       return OneCategory(
                         categoryName: "${lifetimeTags[categories[index]]}",
                         memories: memories,
+                        flagColor: flagColors[index],
                       );
                     });
               });
@@ -62,16 +72,16 @@ class CaptureButton extends StatelessWidget {
       },
       label: const Text('Capture'),
       icon: const Icon(Icons.camera_alt),
-      backgroundColor: Colors.blue,
     );
   }
 }
 
 class OneCategory extends StatelessWidget {
-  OneCategory({super.key, required this.categoryName, this.memories});
-
   final String categoryName;
   final List<Memory>? memories;
+  Color flagColor;
+
+  OneCategory({super.key, required this.categoryName, this.memories, this.flagColor = Colors.black});
 
   @override
   Widget build(BuildContext context) {
@@ -82,11 +92,22 @@ class OneCategory extends StatelessWidget {
     return Column(children: [
       Row(
         children: [
-          const Icon(
+          Icon(
             Icons.flag,
-            color: Colors.amber,
+            color: flagColor,
           ),
-          Text(categoryName)
+          Text(categoryName),
+          const Spacer(),
+          TextButton(
+            onPressed: null,
+            child:
+            Row(
+              children: [
+              Text("all"),
+              Icon(Icons.arrow_forward, size: 15,),
+            ],
+            ),
+          )
         ],
       ),
       Container(

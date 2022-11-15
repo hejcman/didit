@@ -1,10 +1,13 @@
 import 'dart:async';
 
-import 'package:didit/home/HomeScreen.dart';
+import 'package:didit/home/homeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'globals.dart';
+
+// Design
+import 'common/color_schemes.g.dart';
 
 // Database
 import 'storage/schema.dart';
@@ -24,7 +27,10 @@ Future<void> main(List<String> args) async {
 
   // Launch the app
   runApp(MaterialApp(
-    theme: ThemeData.light(),
+    theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+    darkTheme: ThemeData(useMaterial3: true,colorScheme: darkColorScheme),
     home: HomeScreen(),
   ));
+
 }
+
