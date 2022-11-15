@@ -12,11 +12,18 @@ import '../storage/schema.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  final List<Color> flagColors = [Colors.deepPurple.shade300, Colors.deepPurple.shade500,Colors.deepPurple.shade700, Colors.deepPurple.shade800];
+  final List<Color> flagColors = [Colors.deepPurple.shade100, Colors.deepPurple.shade400,Colors.brown.shade700, Colors.deepOrange.shade900];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Image.asset(
+          "assets/logo/didit_logo_light.png",
+          height: 35,
+        ),
+      ),
+
       body: SafeArea(
           child: FutureBuilder(
         future: Hive.openBox<Memory>(Globals.dbName),
@@ -89,7 +96,18 @@ class OneCategory extends StatelessWidget {
             Icons.flag,
             color: flagColor,
           ),
-          Text(categoryName)
+          Text(categoryName),
+          const Spacer(),
+          TextButton(
+            onPressed: null,
+            child:
+            Row(
+              children: [
+              Text("all"),
+              Icon(Icons.arrow_forward, size: 15,),
+            ],
+            ),
+          )
         ],
       ),
       Container(
