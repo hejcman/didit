@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:didit/camera/widgets.dart';
@@ -33,11 +32,8 @@ class CameraScreenState extends State<CameraScreen> {
 
   Future initCamera(CameraDescription cameraDescription) async {
     cameraController = CameraController(
-      cameraDescription,
-      ResolutionPreset.veryHigh,
-      enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.jpeg
-    );
+        cameraDescription, ResolutionPreset.veryHigh,
+        enableAudio: false, imageFormatGroup: ImageFormatGroup.jpeg);
     // cameraController.addListener(() {
     //   if (mounted) {
     //     setState(() {});
@@ -116,37 +112,19 @@ class CameraScreenState extends State<CameraScreen> {
     if (zoom < minZoomLevel) {
       cameraController.setZoomLevel(minZoomLevel);
 
-    // If we are within the bounds of allowed zoomed levels, just set the zoom
-    // level.
+      // If we are within the bounds of allowed zoomed levels, just set the zoom
+      // level.
     } else if (zoom < maxZoomLevel) {
       cameraController.setZoomLevel(zoom);
 
-    // If we exceed the maximum zoom level, set it.
+      // If we exceed the maximum zoom level, set it.
     } else {
       cameraController.setZoomLevel(maxZoomLevel);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () async {
-            Navigator.pop(context);
-          }
-        ),
-        actions: <Widget>[
-          // Rotating flash button
-          OrientationWidget(
-            child: FlashButton(
-              parentCallback: incrementFlashMode,
-            ),
-          ),
-        ],
-      ),
-      body: FutureBuilder<void>(
+  Widget createCameraView() {
+    return FutureBuilder<void>(
         future: cameraControllerFuture,
         builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
           // Camera is not ready, show the loading indicator
@@ -155,64 +133,132 @@ class CameraScreenState extends State<CameraScreen> {
           }
           // Camera is ready, show the preview
           // Camera is ready, show the screen
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: GestureDetector(
-                  onScaleUpdate: (details) async {setCameraZoom(details.scale);},
-                  child: CameraPreview(cameraController)
-                )
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  // Rotating tag button
-                  OrientationWidget(
-                      child: TagButton(parentCallback: incrementLifetimeTag)
-                  ),
-                  // Shutter button
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.camera),
-                      onPressed: () async {
-                        try {
-                          // Ensure the camera is initialized
-                          await cameraControllerFuture;
-                          // Attempt to take a picture
-                          final image = await cameraController.takePicture();
-                          // Create memory from the image
-                          final memory = Memory(
-                              await image.lastModified(),
-                              await image.readAsBytes(),
-                              lifetimeTag
-                          );
-                          // Save Memory to database
-                          createMemory(memory);
-                        } catch (e) {
-                          print(e);
-                        }
-                      },
-                    ),
-                  ),
-                  // Rotating lens picker button
-                  OrientationWidget(
-                  // Camera switcher
-                    child: IconButton(
-                      onPressed: switchCamera,
-                      icon: Icon(
-                        camera_helpers.getCameraIcon(cameras[currentCameraIndex].lensDirection)
-                      )
-                    )
-                  )
-                ],
-              ),
-            ],
-          );
-        }
-      )
+          return Expanded(
+              child: GestureDetector(
+                  onScaleUpdate: (details) async {
+                    setCameraZoom(details.scale);
+                  },
+                  child: CameraPreview(cameraController)));
+        });
+  }
+
+  Widget createBackButton() {
+    return OrientationWidget(
+        child: MaterialButton(
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.black87,
+            ),
+            color: Colors.white,
+            padding: EdgeInsets.all(10),
+            shape: CircleBorder(),
+            onPressed: () async {
+              Navigator.pop(context);
+            }));
+  }
+
+  Widget createFlashbackButton() {
+    return OrientationWidget(
+      child: FlashButton(
+        parentCallback: incrementFlashMode,
+      ),
     );
+  }
+
+  Widget createTagButton() {
+    return OrientationWidget(
+        child: TagButton(parentCallback: incrementLifetimeTag));
+  }
+
+  Widget createSwitchCameraButton() {
+    return OrientationWidget(
+        child: MaterialButton(
+      color: Theme.of(context).colorScheme.primaryContainer,
+      onPressed: switchCamera,
+      padding: EdgeInsets.all(10),
+      shape: CircleBorder(),
+      child: Icon(camera_helpers
+          .getCameraIcon(cameras[currentCameraIndex].lensDirection)),
+    ));
+  }
+
+  Widget createCaptureButton() {
+    return OrientationWidget(
+        child: MaterialButton(
+      color: Colors.white,
+      onPressed: () async {
+        try {
+          // Ensure the camera is initialized
+          await cameraControllerFuture;
+          // Attempt to take a picture
+          final image = await cameraController.takePicture();
+          // Create memory from the image
+          final memory = Memory(await image.lastModified(),
+              await image.readAsBytes(), lifetimeTag);
+          // Save Memory to database
+          createMemory(memory);
+        } catch (e) {
+          print(e);
+        }
+      },
+      padding: EdgeInsets.all(22),
+      shape: CircleBorder(),
+      child: Icon(Icons.camera),
+    ));
+  }
+
+  Widget createBottomButtonRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        createTagButton(),
+        createCaptureButton(),
+        createSwitchCameraButton(),
+      ],
+    );
+  }
+
+  Widget createTopButtonRow() {
+    return Row(
+      children: [createBackButton(), createFlashbackButton()],
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.black12,
+        body: Stack(
+          children: [
+            Align(
+                alignment: AlignmentDirectional.center,
+                child: createCameraView()),
+            SafeArea(
+                child: Align(
+              alignment: AlignmentDirectional.topCenter,
+              child: createTopButtonRow(),
+            )),
+            SafeArea(
+                child: Align(
+              alignment: AlignmentDirectional.bottomCenter,
+              child: createBottomButtonRow(),
+            ))
+          ],
+        ));
+  }
+}
+
+class _MediaSizeClipper extends CustomClipper<Rect> {
+  final Size mediaSize;
+  const _MediaSizeClipper(this.mediaSize);
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTWH(0, 0, mediaSize.width, mediaSize.height);
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Rect> oldClipper) {
+    return true;
   }
 }
