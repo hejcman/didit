@@ -21,6 +21,7 @@ const lifetimeTags = <LifetimeTag, String>{
 };
 
 extension LifetimeTagExtension on LifetimeTag {
+
   /// Convert a lifetime tag to Duration
   Duration toDuration() {
     switch (this) {
@@ -66,7 +67,7 @@ class Memory extends HiveObject {
       return "${timeToExpire.inDays} days";
     }
   }
-
+  
   /// Check if the current Memory is expired.
   bool isExpired() {
     DateTime expirationTime = getExpiration();

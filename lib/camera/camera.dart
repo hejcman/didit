@@ -96,12 +96,14 @@ class CameraScreenState extends State<CameraScreen> {
     final nextIndex = (flashMode.index + 1) % FlashMode.values.length;
     flashMode = FlashMode.values[nextIndex];
     cameraController.setFlashMode(flashMode);
+    log("Flash mode updated, new state: ${flashMode.name}");
   }
 
   void incrementLifetimeTag() {
     log("Updating the lifetime tag, current state: ${lifetimeTag.name}");
     final nextIndex = (lifetimeTag.index + 1) % LifetimeTag.values.length;
     lifetimeTag = LifetimeTag.values[nextIndex];
+    log("Lifetime tag updated, new state: ${lifetimeTag.name}");
   }
 
   /// Set the current camera zoom
@@ -185,7 +187,7 @@ class CameraScreenState extends State<CameraScreen> {
                           final memory = Memory(
                               await image.lastModified(),
                               await image.readAsBytes(),
-                              LifetimeTag.oneDay
+                              lifetimeTag
                           );
                           // Save Memory to database
                           createMemory(memory);
