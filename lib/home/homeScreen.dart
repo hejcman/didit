@@ -3,6 +3,7 @@ import 'package:didit/camera/camera.dart';
 import 'package:didit/storage/adapters.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../photo_detail.dart';
 import '../storage/schema.dart';
 
 import '../globals.dart';
@@ -12,7 +13,12 @@ import '../storage/schema.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  final List<Color> flagColors = [Colors.deepPurple.shade100, Colors.deepPurple.shade400,Colors.brown.shade700, Colors.deepOrange.shade900];
+  final List<Color> flagColors = [
+    Colors.deepPurple.shade100,
+    Colors.deepPurple.shade400,
+    Colors.brown.shade700,
+    Colors.deepOrange.shade900
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +29,6 @@ class HomeScreen extends StatelessWidget {
           height: 35,
         ),
       ),
-
       body: SafeArea(
           child: FutureBuilder(
         future: Hive.openBox<Memory>(Globals.dbName),
@@ -50,6 +55,7 @@ class HomeScreen extends StatelessWidget {
                         categoryName: "${lifetimeTags[categories[index]]}",
                         memories: memories,
                         flagColor: flagColors[index],
+                        box: box,
                       );
                     });
               });
@@ -79,9 +85,15 @@ class CaptureButton extends StatelessWidget {
 class OneCategory extends StatelessWidget {
   final String categoryName;
   final List<Memory>? memories;
+  final Box<Memory> box;
   Color flagColor;
 
-  OneCategory({super.key, required this.categoryName, this.memories, this.flagColor = Colors.black});
+  OneCategory(
+      {super.key,
+      required this.categoryName,
+      this.memories,
+      this.flagColor = Colors.black,
+      required this.box});
 
   @override
   Widget build(BuildContext context) {
@@ -100,12 +112,14 @@ class OneCategory extends StatelessWidget {
           const Spacer(),
           TextButton(
             onPressed: null,
-            child:
-            Row(
+            child: Row(
               children: [
-              Text("all"),
-              Icon(Icons.arrow_forward, size: 15,),
-            ],
+                Text("all"),
+                Icon(
+                  Icons.arrow_forward,
+                  size: 15,
+                ),
+              ],
             ),
           )
         ],
@@ -120,7 +134,7 @@ class OneCategory extends StatelessWidget {
             itemBuilder: (BuildContext context, index) {
               Memory memory = memories![index];
 
-              return CustomPhotoTile(memory: memory);
+              return CustomPhotoTile(memory: memory, box: box, index: index);
             }),
       )
     ]);
@@ -128,21 +142,32 @@ class OneCategory extends StatelessWidget {
 }
 
 class CustomPhotoTile extends StatelessWidget {
-  CustomPhotoTile({super.key, required this.memory});
+  CustomPhotoTile(
+      {super.key,
+      required this.memory,
+      required this.box,
+      required this.index});
 
   Memory memory;
+  final Box<Memory> box;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
-        width: 100,
-        height: 100,
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Image.memory(
-              memory.pictureBytes,
-              fit: BoxFit.fill,
-            )));
+    return GestureDetector(
+        onTap: () async {
+          await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => PhotoDetail(box: box, index: index)));
+        },
+        child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
+            width: 100,
+            height: 100,
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Image.memory(
+                  memory.pictureBytes,
+                  fit: BoxFit.fill,
+                ))));
   }
 }

@@ -17,75 +17,45 @@ class GalleryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Display the Picture'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add_a_photo),
-            onPressed: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const CameraScreen()
-                )
-              );
-            },
-          )
-        ],
-      ),
-      body: FutureBuilder(
-        future: Hive.openBox<Memory>(Globals.dbName),
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-          // Show loading icon until the box is open
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const CircularProgressIndicator();
-          }
-          // Rebuild the gallery on changes in the database
-          return ValueListenableBuilder(
-            valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
-            builder: (BuildContext context, Box<Memory> box, _) {
-              // If there are no images, return info text.
-              if (box.isEmpty) {
-                return const Center(child: Text("No images to show."));
-              }
-              // Delete any outdated memories
-              deleteOutdatedMemories();
-              var memories = getMemories(LifetimeTag.oneDay);
-
-              return GridView.builder(
-                itemCount: memories.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2
-                ),
-                itemBuilder: (BuildContext context, index) {
-                  return Image.memory(memories[index].pictureBytes);
-                }
-              );
+        appBar: AppBar(
+          title: const Text('Display the Picture'),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.add_a_photo),
+              onPressed: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const CameraScreen()));
+              },
+            )
+          ],
+        ),
+        body: FutureBuilder(
+          future: Hive.openBox<Memory>(Globals.dbName),
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            // Show loading icon until the box is open
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const CircularProgressIndicator();
             }
             // Rebuild the gallery on changes in the database
             return ValueListenableBuilder(
                 valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
                 builder: (BuildContext context, Box<Memory> box, _) {
                   // If there are no images, return info text.
-                  if (box.values.isEmpty) {
+                  if (box.isEmpty) {
                     return const Center(child: Text("No images to show."));
                   }
+                  // Delete any outdated memories
+                  deleteOutdatedMemories();
+                  var memories = getMemories(LifetimeTag.oneDay);
+
                   return GridView.builder(
-                    itemCount: box.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2),
-                    itemBuilder: (BuildContext context, index) {
-                      Memory memory = box.getAt(index) as Memory;
-                      return InkWell(
-                        onTap: () async {
-                          await Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  PhotoDetail(box: box, index: index)));
-                        },
-                        child: Image.memory(memory.pictureBytes),
-                      );
-                    },
-                  );
+                      itemCount: memories.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2),
+                      itemBuilder: (BuildContext context, index) {
+                        return Image.memory(memories[index].pictureBytes);
+                      });
                 });
           },
         ));
