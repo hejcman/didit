@@ -37,9 +37,9 @@ class _BeginWithOnBoardingState extends State<BeginWithOnBoarding> {
     super.initState();
 
     // TODO: DEV line to remove data inorder to run on-boarding every time
-    _prefs.then((SharedPreferences prefs) {
+    /*_prefs.then((SharedPreferences prefs) {
       prefs.remove('displayOnBoarding');
-    });
+    });*/
 
     _displayOnBoarding = _prefs.then((SharedPreferences prefs) {
       return prefs.getBool('displayOnBoarding') ?? true;
