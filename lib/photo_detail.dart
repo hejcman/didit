@@ -95,9 +95,13 @@ class PhotoDetailState extends State<PhotoDetail> {
                   setState(() {
                     _selectedMenu = item;
                     widget.box.getAt(curIndex)!.lifetimeTag = mapToTag(item);
+                    //TODO: - Change tag in DB, (nejspíš to neměnít. Když killnu aplikaci je fotka pořád pod starým tagem)
                   });
                 },
-                icon: Text(mapToText(mapToMenu(memory.lifetimeTag))),
+                icon: Row(children: [
+                  Icon(Icons.flag, size: 20),
+                  Text(mapToText(mapToMenu(memory.lifetimeTag)))
+                ]),
                 iconSize: 60.0,
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
                       const PopupMenuItem<Menu>(

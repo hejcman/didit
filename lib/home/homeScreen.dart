@@ -10,9 +10,14 @@ import '../globals.dart';
 
 import '../storage/schema.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final List<Color> flagColors = [
     Colors.deepPurple.shade100,
     Colors.deepPurple.shade400,
@@ -169,7 +174,7 @@ class CustomPhotoTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
                 child: Image.memory(
                   memory.pictureBytes,
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                 ))));
   }
 }
