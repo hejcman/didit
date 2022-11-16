@@ -179,9 +179,9 @@ final List<OnBoardingSlide> onBoardingSlidesData = [
       "You can store your photos prior to the expiration.",
   ),
   const OnBoardingSlide(
-    lottie: 'assets/lottie/trash.json',
-    title: "Lets begin!",
-    description: "Lorem ipsum dolor sit amet",
+    lottie: 'assets/lottie/lets-begin.json',
+    title: "Lets begin using the App!",
+    description: "Are you ready? I am.",
   ),
 ];
 
