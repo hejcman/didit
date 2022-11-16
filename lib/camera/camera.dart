@@ -133,12 +133,11 @@ class CameraScreenState extends State<CameraScreen> {
           }
           // Camera is ready, show the preview
           // Camera is ready, show the screen
-          return Expanded(
-              child: GestureDetector(
-                  onScaleUpdate: (details) async {
-                    setCameraZoom(details.scale);
-                  },
-                  child: CameraPreview(cameraController)));
+          return GestureDetector(
+              onScaleUpdate: (details) async {
+                setCameraZoom(details.scale);
+              },
+              child: CameraPreview(cameraController));
         });
   }
 
@@ -209,7 +208,7 @@ class CameraScreenState extends State<CameraScreen> {
 
   Widget createBottomButtonRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         createTagButton(),
         createCaptureButton(),
@@ -230,6 +229,7 @@ class CameraScreenState extends State<CameraScreen> {
     return Scaffold(
         backgroundColor: Colors.black12,
         body: Stack(
+          fit: StackFit.expand,
           children: [
             Align(
                 alignment: AlignmentDirectional.center,
