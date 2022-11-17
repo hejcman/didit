@@ -1,4 +1,3 @@
-
 import 'package:camera/camera.dart';
 import 'package:didit/storage/schema.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ class FlashButton extends StatefulWidget {
 }
 
 class _FlashButtonState extends State<FlashButton> {
-
   // Selecting the first flash mode
   FlashMode flashMode = FlashMode.values[0];
 
@@ -29,8 +27,11 @@ class _FlashButtonState extends State<FlashButton> {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(camera_helpers.getFlashIcon(flashMode)),
+    return MaterialButton(
+      padding: EdgeInsets.all(10),
+      shape: CircleBorder(),
+      color: Theme.of(context).colorScheme.primaryContainer,
+      child: Icon(camera_helpers.getFlashIcon(flashMode)),
       onPressed: () {
         setState(() {
           flashMode = incrementFlashMode();
@@ -54,7 +55,6 @@ class TagButton extends StatefulWidget {
 }
 
 class _TagButtonState extends State<TagButton> {
-
   // Selecting the first tag
   LifetimeTag currentTag = LifetimeTag.values[0];
 
@@ -65,14 +65,18 @@ class _TagButtonState extends State<TagButton> {
 
   @override
   Widget build(BuildContext context) {
-   return TextButton(
-     onPressed: () {
-       setState(() {
-         currentTag = incrementCurrentTag();
-         widget.parentCallback();
-       });
-     },
-     child: camera_helpers.getTagText(currentTag),
-   );
+    return MaterialButton(
+      color: Theme.of(context).colorScheme.primaryContainer,
+      padding: EdgeInsets.symmetric(vertical: 10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      onPressed: () {
+        setState(() {
+          currentTag = incrementCurrentTag();
+          widget.parentCallback();
+        });
+      },
+      child: Row(
+          children: [Icon(Icons.flag), camera_helpers.getTagText(currentTag)]),
+    );
   }
 }
