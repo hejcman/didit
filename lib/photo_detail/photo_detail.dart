@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:didit/photo_detail/photo_detail_service.dart';
 import 'package:didit/storage/adapters.dart';
 import 'package:didit/storage/schema.dart';
 import 'package:flutter/material.dart';
@@ -10,49 +11,18 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:share_plus/share_plus.dart';
 
-import 'globals.dart';
-
-enum Menu { itemOne, itemTwo, itemThree }
-
-// TODO: where to put these map functions
-String mapToText(Menu menuItem) {
-  switch (menuItem) {
-    case Menu.itemOne:
-      return "1";
-    case Menu.itemTwo:
-      return "7";
-    case Menu.itemThree:
-      return "30";
-  }
-}
-
-Menu mapToMenu(LifetimeTag tag) {
-  switch (tag) {
-    case LifetimeTag.oneDay:
-      return Menu.itemOne;
-    case LifetimeTag.sevenDays:
-      return Menu.itemTwo;
-    case LifetimeTag.thirtyDays:
-      return Menu.itemThree;
-  }
-}
-
-LifetimeTag mapToTag(Menu menuItem) {
-  switch (menuItem) {
-    case Menu.itemOne:
-      return LifetimeTag.oneDay;
-    case Menu.itemTwo:
-      return LifetimeTag.sevenDays;
-    case Menu.itemThree:
-      return LifetimeTag.thirtyDays;
-  }
-}
+import '../globals.dart';
 
 class PhotoDetail extends StatefulWidget {
   final Box<Memory> box;
+  final List<Memory> memories;
   final int index;
 
-  PhotoDetail({Key? key, required this.box, required this.index})
+  PhotoDetail(
+      {Key? key,
+      required this.box,
+      required this.index,
+      required this.memories})
       : super(key: key);
 
   @override
@@ -60,12 +30,12 @@ class PhotoDetail extends StatefulWidget {
 }
 
 class PhotoDetailState extends State<PhotoDetail> {
-  // default current is from PhotoDetail class
+  // default current index is from PhotoDetail class
   int curIndex;
   PhotoDetailState({required this.curIndex});
 
   // variables I don't want to change in build method with calling setState
-  Menu? _selectedMenu;
+  //Menu? _selectedMenu;
   PhotoViewScaleStateController scaleStateController =
       PhotoViewScaleStateController();
 
@@ -73,8 +43,6 @@ class PhotoDetailState extends State<PhotoDetail> {
   Widget build(BuildContext context) {
     // initial index is taken from PhotoDetail class
     PageController _pageController = PageController(initialPage: curIndex);
-    // memory of current index
-    Memory? memory = widget.box.getAt(curIndex);
     int popScreenCount = 0;
 
     return Scaffold(
@@ -82,7 +50,8 @@ class PhotoDetailState extends State<PhotoDetail> {
           bottom: PreferredSize(
               preferredSize: Size.fromHeight(5),
               child: Container(
-                child: Text("Deleted in: ${memory!.getTimeToExpire()}"),
+                child: Text(
+                    "Deleted in: ${widget.memories[curIndex].getTimeToExpire()}"),
               )),
           leading: IconButton(
               icon: const Icon(Icons.arrow_back),
@@ -92,12 +61,18 @@ class PhotoDetailState extends State<PhotoDetail> {
           actions: <Widget>[
             PopupMenuButton<Menu>(
                 onSelected: (Menu item) {
-                  setState(() {
-                    _selectedMenu = item;
-                    widget.box.getAt(curIndex)!.lifetimeTag = mapToTag(item);
-                  });
+                  // only when you change tag
+                  if (mapToTag(item) != widget.memories[curIndex].lifetimeTag) {
+                    setState(() {
+                      //_selectedMenu = item;
+                      updateMemoryTag(
+                          widget.memories[curIndex], mapToTag(item));
+                      Navigator.pop(context);
+                    });
+                  }
                 },
-                icon: Text(mapToText(mapToMenu(memory.lifetimeTag))),
+                icon: Text(mapToText(
+                    mapToMenu(widget.memories[curIndex].lifetimeTag))),
                 iconSize: 60.0,
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
                       const PopupMenuItem<Menu>(
@@ -118,10 +93,9 @@ class PhotoDetailState extends State<PhotoDetail> {
                 onPressed: () async {
                   final directory = (await getExternalStorageDirectory())?.path;
                   File imgFile = new File('${directory}assets/screenshot.png');
-                  imgFile.writeAsBytes(memory!.pictureBytes);
+                  imgFile.writeAsBytes(widget.memories[curIndex].pictureBytes);
                   await Share.shareXFiles(
                       [XFile('${directory}assets/screenshot.png')]);
-                  //TODO: check if deleted
                   imgFile.delete();
                 }),
             IconButton(
@@ -134,7 +108,7 @@ class PhotoDetailState extends State<PhotoDetail> {
                       actions: <Widget>[
                         TextButton(
                           onPressed: () async {
-                            deleteMemory(memory!);
+                            deleteMemory(widget.memories[curIndex]);
                             // two pop
                             Navigator.of(context)
                                 .popUntil((_) => popScreenCount++ >= 2);
@@ -162,21 +136,19 @@ class PhotoDetailState extends State<PhotoDetail> {
             });
           },
           builder: (BuildContext context, int index) {
-            memory = widget.box.getAt(index);
             return PhotoViewGalleryPageOptions(
-                imageProvider: MemoryImage(memory!.pictureBytes),
-                heroAttributes: PhotoViewHeroAttributes(tag: curIndex),
+                imageProvider: MemoryImage(widget.memories[index].pictureBytes),
+                heroAttributes: PhotoViewHeroAttributes(tag: index),
                 maxScale: PhotoViewComputedScale.covered * 3,
                 minScale: PhotoViewComputedScale.contained,
                 scaleStateController: scaleStateController,
-                // TODO: TEST ME: rotation? only for the time you are touching the display
                 gestureDetectorBehavior: HitTestBehavior.deferToChild,
                 onScaleEnd: (context, details, controllerValue) =>
                     scaleStateController.scaleState =
                         PhotoViewScaleState.covering);
           },
           enableRotation: true,
-          itemCount: widget.box.length,
+          itemCount: widget.memories.length,
           loadingBuilder: (context, event) => Center(
             child: Container(
               width: 30.0,

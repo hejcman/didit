@@ -3,7 +3,7 @@ import 'package:didit/camera/camera.dart';
 import 'package:didit/storage/adapters.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../photo_detail.dart';
+import '../photo_detail/photo_detail.dart';
 import '../storage/schema.dart';
 
 import '../globals.dart';
@@ -84,14 +84,14 @@ class CaptureButton extends StatelessWidget {
 
 class OneCategory extends StatelessWidget {
   final String categoryName;
-  final List<Memory>? memories;
+  final List<Memory> memories;
   final Box<Memory> box;
   Color flagColor;
 
   OneCategory(
       {super.key,
       required this.categoryName,
-      this.memories,
+      required this.memories,
       this.flagColor = Colors.black,
       required this.box});
 
@@ -128,13 +128,13 @@ class OneCategory extends StatelessWidget {
         height: 200,
         child: GridView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: memories?.length,
+            itemCount: memories!.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2),
             itemBuilder: (BuildContext context, index) {
               Memory memory = memories![index];
-
-              return CustomPhotoTile(memory: memory, box: box, index: index);
+              return CustomPhotoTile(
+                  memory: memory, box: box, memories: memories, index: index);
             }),
       )
     ]);
@@ -146,10 +146,12 @@ class CustomPhotoTile extends StatelessWidget {
       {super.key,
       required this.memory,
       required this.box,
+      required this.memories,
       required this.index});
 
   Memory memory;
   final Box<Memory> box;
+  final List<Memory> memories;
   final int index;
 
   @override
@@ -157,7 +159,8 @@ class CustomPhotoTile extends StatelessWidget {
     return GestureDetector(
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => PhotoDetail(box: box, index: index)));
+              builder: (context) =>
+                  PhotoDetail(box: box, index: index, memories: memories)));
         },
         child: Container(
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
