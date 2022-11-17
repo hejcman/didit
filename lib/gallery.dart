@@ -1,4 +1,4 @@
-import 'package:didit/photo_detail.dart';
+import 'package:didit/photo_detail/photo_detail.dart';
 import 'package:didit/storage/adapters.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';

@@ -15,6 +15,13 @@ void createMemory(Memory memory) {
   box.flush();
 }
 
+/// Update the tag of a memory -
+/// delete the memory object from the database and create new one with new tag
+void updateMemoryTag(Memory memory, LifetimeTag newTag) {
+  deleteMemory(memory);
+  createMemory(Memory(memory.created, memory.pictureBytes, newTag));
+}
+
 /// Delete the memory object from the database.
 void deleteMemory(Memory memory) {
   var box = getMemoryBox();
@@ -42,5 +49,7 @@ List<Memory> getMemories(LifetimeTag lifetimeTag) {
   }
 
   // Otherwise, get all the relevant memories
-  return box.values.where((memory) => memory.lifetimeTag == lifetimeTag).toList(growable: false);
+  return box.values
+      .where((memory) => memory.lifetimeTag == lifetimeTag)
+      .toList(growable: false);
 }
