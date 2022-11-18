@@ -1,14 +1,13 @@
 import 'dart:typed_data';
 import 'package:didit/camera/camera.dart';
 import 'package:didit/storage/adapters.dart';
+import 'package:didit/grid_gallery_screen/gridGalleryScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../photo_detail/photo_detail.dart';
 import '../storage/schema.dart';
 
 import '../globals.dart';
-
-import '../storage/schema.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -18,13 +17,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Color> flagColors = [
-    Colors.deepPurple.shade100,
-    Colors.deepPurple.shade400,
-    Colors.brown.shade700,
-    Colors.deepOrange.shade900
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,17 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
 
                 deleteOutdatedMemories();
-                final List<LifetimeTag> categories = lifetimeTags.keys.toList();
-                lifetimeTags.values.toList();
+                final List<LifetimeTag> categories = LifetimeTag.values;
                 return ListView.builder(
                     padding: EdgeInsets.all(20),
                     itemCount: categories.length,
                     itemBuilder: (BuildContext context, int index) {
                       final memories = getMemories(categories[index]);
                       return OneCategory(
-                        categoryName: "${lifetimeTags[categories[index]]}",
+                        tag: categories[index],
                         memories: memories,
-                        flagColor: flagColors[index],
                         box: box,
                       );
                     });
@@ -90,16 +80,14 @@ class CaptureButton extends StatelessWidget {
 }
 
 class OneCategory extends StatelessWidget {
-  final String categoryName;
+  final LifetimeTag tag;
   final List<Memory> memories;
   final Box<Memory> box;
-  Color flagColor;
 
   OneCategory(
       {super.key,
-      required this.categoryName,
+      required this.tag,
       required this.memories,
-      this.flagColor = Colors.black,
       required this.box});
 
   @override
@@ -111,16 +99,18 @@ class OneCategory extends StatelessWidget {
     return Column(children: [
       Row(
         children: [
-          Icon(
-            Icons.flag,
-            color: flagColor,
-          ),
-          Text(categoryName),
+          tag.iconWidget(),
           const Spacer(),
           TextButton(
-            onPressed: null,
+            onPressed: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => GridGalleryScreen(
+                        box: box,
+                        tag: tag,
+                      )));
+            },
             child: Row(
-              children: [
+              children: const [
                 Text("all"),
                 Icon(
                   Icons.arrow_forward,
@@ -171,8 +161,6 @@ class CustomPhotoTile extends StatelessWidget {
         },
         child: Container(
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
-            width: 100,
-            height: 100,
             child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Image.memory(
