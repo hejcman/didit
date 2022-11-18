@@ -99,7 +99,7 @@ class OneCategory extends StatelessWidget {
     return Column(children: [
       Row(
         children: [
-          tag.iconWidget(),
+          tag.iconWidget(textColor: Theme.of(context).colorScheme.onBackground),
           const Spacer(),
           TextButton(
             onPressed: () async {
@@ -110,12 +110,11 @@ class OneCategory extends StatelessWidget {
                       )));
             },
             child: Row(
-              children: const [
-                Text("all"),
-                Icon(
-                  Icons.arrow_forward,
-                  size: 15,
+              children: [
+                Text(
+                  "all",
                 ),
+                Icon(Icons.arrow_forward, size: 15),
               ],
             ),
           )

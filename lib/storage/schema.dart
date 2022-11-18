@@ -61,17 +61,18 @@ extension LifetimeTagExtension on LifetimeTag {
     }
   }
 
-  Widget iconWidget({Color? color}) {
+  Widget iconWidget({Color? color, Color? textColor}) {
     return Row(children: [
       Icon(
         Icons.flag,
         color: color ?? tagColor(),
       ),
-      Text(tagName(), style: TextStyle(color: color ?? Colors.black))
+      Text(tagName(),
+          style: TextStyle(color: textColor ?? (color ?? Colors.black)))
     ]);
   }
 
-  Widget shortIconWidget({Color? color}) {
+  Widget shortIconWidget({Color? color, Color? textColor}) {
     return Row(children: [
       Icon(
         Icons.flag,
@@ -79,7 +80,7 @@ extension LifetimeTagExtension on LifetimeTag {
       ),
       Text(
         tagShortString(),
-        style: TextStyle(color: color ?? Colors.black),
+        style: TextStyle(color: textColor ?? (color ?? Colors.black)),
       )
     ]);
   }
