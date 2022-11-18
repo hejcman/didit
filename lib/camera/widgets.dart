@@ -75,8 +75,7 @@ class _TagButtonState extends State<TagButton> {
           widget.parentCallback();
         });
       },
-      child: Row(
-          children: [Icon(Icons.flag), camera_helpers.getTagText(currentTag)]),
+      child: currentTag.shortIconWidget(Colors.black87),
     );
   }
 }

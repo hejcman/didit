@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -14,12 +15,6 @@ enum LifetimeTag {
   thirtyDays,
 }
 
-const lifetimeTags = <LifetimeTag, String>{
-  LifetimeTag.oneDay: "1 Day",
-  LifetimeTag.sevenDays: "7 Days",
-  LifetimeTag.thirtyDays: "30 Days",
-};
-
 extension LifetimeTagExtension on LifetimeTag {
   /// Convert a lifetime tag to Duration
   Duration toDuration() {
@@ -31,6 +26,59 @@ extension LifetimeTagExtension on LifetimeTag {
       case LifetimeTag.thirtyDays:
         return const Duration(days: 30);
     }
+  }
+
+  String tagShortString() {
+    switch (this) {
+      case LifetimeTag.oneDay:
+        return "1";
+      case LifetimeTag.sevenDays:
+        return "7";
+      case LifetimeTag.thirtyDays:
+        return "30";
+    }
+  }
+
+  String tagName() {
+    switch (this) {
+      case LifetimeTag.oneDay:
+        return "1 Day";
+      case LifetimeTag.sevenDays:
+        return "7 Days";
+      case LifetimeTag.thirtyDays:
+        return "30 Days";
+    }
+  }
+
+  Color tagColor() {
+    switch (this) {
+      case LifetimeTag.oneDay:
+        return Colors.deepPurple.shade100;
+      case LifetimeTag.sevenDays:
+        return Colors.deepPurple.shade400;
+      case LifetimeTag.thirtyDays:
+        return Colors.brown.shade700;
+    }
+  }
+
+  Widget iconWidget([Color? color]) {
+    return Row(children: [
+      Icon(
+        Icons.flag,
+        color: color ?? tagColor(),
+      ),
+      Text(tagName())
+    ]);
+  }
+
+  Widget shortIconWidget([Color? color]) {
+    return Row(children: [
+      Icon(
+        Icons.flag,
+        color: color ?? tagColor(),
+      ),
+      Text(tagShortString())
+    ]);
   }
 }
 
