@@ -47,14 +47,9 @@ class PhotoDetailState extends State<PhotoDetail> {
 
     return Scaffold(
         appBar: AppBar(
-          bottom: PreferredSize(
-              preferredSize: Size.fromHeight(5),
-              child: Container(
-                child: Text(
-                    "Deleted in: ${widget.memories[curIndex].getTimeToExpire()}"),
-              )),
           leading: IconButton(
               icon: const Icon(Icons.arrow_back),
+              color: Theme.of(context).colorScheme.onBackground,
               onPressed: () async {
                 Navigator.pop(context);
               }),
@@ -71,9 +66,8 @@ class PhotoDetailState extends State<PhotoDetail> {
                     });
                   }
                 },
-                icon: Text(mapToText(
-                    mapToMenu(widget.memories[curIndex].lifetimeTag))),
-                iconSize: 60.0,
+                icon: widget.memories[curIndex].lifetimeTag.shortIconWidget(
+                    color: Theme.of(context).colorScheme.onBackground),
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
                       const PopupMenuItem<Menu>(
                         value: Menu.itemOne,
@@ -90,6 +84,7 @@ class PhotoDetailState extends State<PhotoDetail> {
                     ]),
             IconButton(
                 icon: const Icon(Icons.share),
+                color: Theme.of(context).colorScheme.onBackground,
                 onPressed: () async {
                   final directory = (await getExternalStorageDirectory())?.path;
                   File imgFile = new File('${directory}assets/screenshot.png');
@@ -100,6 +95,7 @@ class PhotoDetailState extends State<PhotoDetail> {
                 }),
             IconButton(
                 icon: const Icon(Icons.delete),
+                color: Theme.of(context).colorScheme.onBackground,
                 onPressed: () {
                   showDialog<String>(
                     context: context,
@@ -126,40 +122,63 @@ class PhotoDetailState extends State<PhotoDetail> {
                 }),
           ],
         ),
-        body: Container(
-            child: PhotoViewGallery.builder(
-          scrollPhysics: const BouncingScrollPhysics(),
-          pageController: _pageController,
-          onPageChanged: (int index) {
-            setState(() {
-              curIndex = index;
-            });
-          },
-          builder: (BuildContext context, int index) {
-            return PhotoViewGalleryPageOptions(
-                imageProvider: MemoryImage(widget.memories[index].pictureBytes),
-                heroAttributes: PhotoViewHeroAttributes(tag: index),
-                maxScale: PhotoViewComputedScale.covered * 3,
-                minScale: PhotoViewComputedScale.contained,
-                scaleStateController: scaleStateController,
-                gestureDetectorBehavior: HitTestBehavior.deferToChild,
-                onScaleEnd: (context, details, controllerValue) =>
-                    scaleStateController.scaleState =
-                        PhotoViewScaleState.covering);
-          },
-          enableRotation: true,
-          itemCount: widget.memories.length,
-          loadingBuilder: (context, event) => Center(
-            child: Container(
-              width: 30.0,
-              height: 30.0,
-              child: CircularProgressIndicator(
-                value: event != null
-                    ? event.cumulativeBytesLoaded / widget.box.length
-                    : 0,
+        body: Stack(
+          children: [
+            Container(
+                child: PhotoViewGallery.builder(
+              scrollPhysics: const BouncingScrollPhysics(),
+              pageController: _pageController,
+              onPageChanged: (int index) {
+                setState(() {
+                  curIndex = index;
+                });
+              },
+              builder: (BuildContext context, int index) {
+                return PhotoViewGalleryPageOptions(
+                    imageProvider:
+                        MemoryImage(widget.memories[index].pictureBytes),
+                    heroAttributes: PhotoViewHeroAttributes(tag: index),
+                    maxScale: PhotoViewComputedScale.covered * 3,
+                    minScale: PhotoViewComputedScale.contained,
+                    scaleStateController: scaleStateController,
+                    gestureDetectorBehavior: HitTestBehavior.deferToChild,
+                    onScaleEnd: (context, details, controllerValue) =>
+                        scaleStateController.scaleState =
+                            PhotoViewScaleState.covering);
+              },
+              enableRotation: true,
+              itemCount: widget.memories.length,
+              loadingBuilder: (context, event) => Center(
+                child: Container(
+                  width: 30.0,
+                  height: 30.0,
+                  child: CircularProgressIndicator(
+                    value: event != null
+                        ? event.cumulativeBytesLoaded / widget.box.length
+                        : 0,
+                  ),
+                ),
+              ),
+            )),
+            SafeArea(
+              child: Align(
+                alignment: AlignmentDirectional.topEnd,
+                child: Container(
+                  margin: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    color: Colors.black87.withOpacity(0.5),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    "Deleted in: ${widget.memories[curIndex].getTimeToExpire()}",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w300),
+                  ),
+                ),
               ),
             ),
-          ),
-        )));
+          ],
+        ));
   }
 }

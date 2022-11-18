@@ -27,7 +27,8 @@ class _GridGalleryScreenState extends State<GridGalleryScreen> {
             onPressed: () async {
               Navigator.pop(context);
             }),
-        title: widget.tag.iconWidget(),
+        title: widget.tag
+            .iconWidget(textColor: Theme.of(context).colorScheme.onBackground),
       ),
       body: ValueListenableBuilder(
           valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
