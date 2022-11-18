@@ -75,7 +75,7 @@ class _TagButtonState extends State<TagButton> {
           widget.parentCallback();
         });
       },
-      child: currentTag.shortIconWidget(Colors.black87),
+      child: currentTag.shortIconWidget(color: Colors.black87),
     );
   }
 }

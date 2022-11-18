@@ -61,23 +61,26 @@ extension LifetimeTagExtension on LifetimeTag {
     }
   }
 
-  Widget iconWidget([Color? color]) {
+  Widget iconWidget({Color? color}) {
     return Row(children: [
       Icon(
         Icons.flag,
         color: color ?? tagColor(),
       ),
-      Text(tagName())
+      Text(tagName(), style: TextStyle(color: color ?? Colors.black))
     ]);
   }
 
-  Widget shortIconWidget([Color? color]) {
+  Widget shortIconWidget({Color? color}) {
     return Row(children: [
       Icon(
         Icons.flag,
         color: color ?? tagColor(),
       ),
-      Text(tagShortString())
+      Text(
+        tagShortString(),
+        style: TextStyle(color: color ?? Colors.black),
+      )
     ]);
   }
 }
