@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
-import 'package:didit/photo_detail/photo_detail_service.dart';
 import 'package:didit/storage/adapters.dart';
 import 'package:didit/storage/schema.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +9,14 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../globals.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class PhotoDetail extends StatefulWidget {
   final Box<Memory> box;
   final List<Memory> memories;
   final int index;
 
-  PhotoDetail(
+  const PhotoDetail(
       {Key? key,
       required this.box,
       required this.index,
@@ -54,34 +52,26 @@ class PhotoDetailState extends State<PhotoDetail> {
                 Navigator.pop(context);
               }),
           actions: <Widget>[
-            PopupMenuButton<Menu>(
-                onSelected: (Menu item) {
-                  // only when you change tag
-                  if (mapToTag(item) != widget.memories[curIndex].lifetimeTag) {
-                    setState(() {
-                      //_selectedMenu = item;
-                      updateMemoryTag(
-                          widget.memories[curIndex], mapToTag(item));
-                      Navigator.pop(context);
-                    });
-                  }
-                },
-                icon: widget.memories[curIndex].lifetimeTag.shortIconWidget(
-                    color: Theme.of(context).colorScheme.onBackground),
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-                      const PopupMenuItem<Menu>(
-                        value: Menu.itemOne,
-                        child: Text('1 Day'),
-                      ),
-                      const PopupMenuItem<Menu>(
-                        value: Menu.itemTwo,
-                        child: Text('7 Days'),
-                      ),
-                      const PopupMenuItem<Menu>(
-                        value: Menu.itemThree,
-                        child: Text('30 Days'),
-                      ),
-                    ]),
+            ToggleSwitch(
+              // Indexing the buttons
+              initialLabelIndex: LifetimeTag.values.indexOf(widget.memories[curIndex].lifetimeTag),
+              totalSwitches: LifetimeTag.values.length,
+              // Styling
+              animate: true,
+              radiusStyle: true,
+              cornerRadius: 25,
+              curve: Curves.bounceInOut,
+              inactiveFgColor: Colors.white,
+              borderWidth: 10.0,
+              labels: [for (final tag in LifetimeTag.values) tag.tagName()],
+              activeBgColors: [for (final tag in LifetimeTag.values) [tag.tagColor()]],
+              // Callback
+              onToggle: (index) {
+                if (LifetimeTag.values[index!] != widget.memories[curIndex].lifetimeTag) {
+                  updateMemoryTag(widget.memories[curIndex], LifetimeTag.values[index]);
+                }
+              },
+            ),
             IconButton(
                 icon: const Icon(Icons.share),
                 color: Theme.of(context).colorScheme.onBackground,
