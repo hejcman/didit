@@ -28,8 +28,8 @@ class _FlashButtonState extends State<FlashButton> {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      padding: EdgeInsets.all(10),
-      shape: CircleBorder(),
+      padding: const EdgeInsets.all(10),
+      shape: const CircleBorder(),
       color: Theme.of(context).colorScheme.primaryContainer,
       child: Icon(camera_helpers.getFlashIcon(flashMode)),
       onPressed: () {
@@ -67,7 +67,7 @@ class _TagButtonState extends State<TagButton> {
   Widget build(BuildContext context) {
     return MaterialButton(
       color: Theme.of(context).colorScheme.primaryContainer,
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       onPressed: () {
         setState(() {

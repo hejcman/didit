@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
-import 'package:lottie/lottie.dart';
 import 'dart:async';
+
+import 'package:didit/common/platformization.dart';
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
@@ -26,7 +27,9 @@ class _OnBoardingViewState extends State<OnBoardingView> {
     final bool displayOnBoarding = prefs.getBool('displayOnBoarding') ?? true;
 
     setState(() {
-      _displayOnBoarding = prefs.setBool('displayOnBoarding', !displayOnBoarding).then((bool success) {
+      _displayOnBoarding = prefs
+          .setBool('displayOnBoarding', !displayOnBoarding)
+          .then((bool success) {
         return displayOnBoarding;
       });
     });
@@ -46,59 +49,60 @@ class _OnBoardingViewState extends State<OnBoardingView> {
 
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: PageView.builder(
-                      itemCount: onBoardingSlidesData.length,
-                      controller: _pageController,
-                      onPageChanged: changePageIndex,
-                      itemBuilder: (context, index) => OnBoardingSlide(
-                          lottie: onBoardingSlidesData[index].lottie,
-                          title: onBoardingSlidesData[index].title,
-                          description: onBoardingSlidesData[index].description,
-                      ),
-                    ),
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: PageView.builder(
+                  itemCount: onBoardingSlidesData.length,
+                  controller: _pageController,
+                  onPageChanged: changePageIndex,
+                  itemBuilder: (context, index) => OnBoardingSlide(
+                    lottie: onBoardingSlidesData[index].lottie,
+                    title: onBoardingSlidesData[index].title,
+                    description: onBoardingSlidesData[index].description,
                   ),
-                  Row(
-                    children: [
-                      ...List.generate(onBoardingSlidesData.length, (index) => Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: DotIndicator(
-                          isActive: index == _pageIndex,
-                        ),
-                      )),
-                      const Spacer(),
-                      SizedBox(
-                        height: 60,
-                        width: 60,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            nextPageButtonPress();
-                          },
-                          // style: ElevatedButton.styleFrom(shape: const CircleBorder()),
-                          style: ButtonStyle(
-                            //backgroundColor: MaterialStateProperty.all<Color?>(Colors.teal[700]),
-                            shape: MaterialStateProperty.all<CircleBorder?>(const CircleBorder()),
-                          ),
-                          child: Icon(
-                              _lastPage ?
-                                Icons.photo_camera : Icons.arrow_forward_rounded
-                          ),
-                        )
-                      ),
-                    ],
-                  )
-                ],
+                ),
               ),
-            ),
+              Row(
+                children: [
+                  ...List.generate(
+                      onBoardingSlidesData.length,
+                      (index) => Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: DotIndicator(
+                              isActive: index == _pageIndex,
+                            ),
+                          )),
+                  const Spacer(),
+                  SizedBox(
+                      height: 60,
+                      width: 60,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          nextPageButtonPress();
+                        },
+                        // style: ElevatedButton.styleFrom(shape: const CircleBorder()),
+                        style: ButtonStyle(
+                          //backgroundColor: MaterialStateProperty.all<Color?>(Colors.teal[700]),
+                          shape: MaterialStateProperty.all<CircleBorder?>(
+                              const CircleBorder()),
+                        ),
+                        child: Icon(_lastPage
+                            ? getCameraIcon()
+                            : getArrowForwardIcon()),
+                      )),
+                ],
+              )
+            ],
           ),
-      );
+        ),
+      ),
+    );
   }
 
   void nextPageButtonPress() {
@@ -106,10 +110,9 @@ class _OnBoardingViewState extends State<OnBoardingView> {
       changeFirstVisit();
 
       Navigator.pushReplacement(
-        context,
-        // Redirect to Homepage
-        MaterialPageRoute(builder: (context) => const MyApp())
-      );
+          context,
+          // Redirect to Homepage
+          MaterialPageRoute(builder: (context) => const MyApp()));
       return;
     }
     _pageController.nextPage(
@@ -152,11 +155,8 @@ class DotIndicator extends StatelessWidget {
 class Onboard {
   final String lottie, title, description;
 
-  Onboard({
-    required this.lottie,
-    required this.title,
-    required this.description
-  });
+  Onboard(
+      {required this.lottie, required this.title, required this.description});
 }
 
 final List<OnBoardingSlide> onBoardingSlidesData = [
@@ -174,9 +174,10 @@ final List<OnBoardingSlide> onBoardingSlidesData = [
   ),
   const OnBoardingSlide(
     lottie: 'assets/lottie/trash.json',
-    title: "After set expiration, expired photos will get deleted automatically!",
+    title:
+        "After set expiration, expired photos will get deleted automatically!",
     description: "So you don't need to worry about storage space anymore. "
-      "You can store your photos prior to the expiration.",
+        "You can store your photos prior to the expiration.",
   ),
   const OnBoardingSlide(
     lottie: 'assets/lottie/lets-begin.json',
@@ -216,19 +217,14 @@ class OnBoardingSlide extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        Text(
-          description,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onBackground,
-            fontSize: 20.0,
-          )
-        ),
+        Text(description,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onBackground,
+              fontSize: 20.0,
+            )),
         const Spacer(),
       ],
     );
   }
 }
-
-
-

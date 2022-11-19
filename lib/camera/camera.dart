@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:didit/camera/widgets.dart';
+import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
@@ -144,16 +145,16 @@ class CameraScreenState extends State<CameraScreen> {
   Widget createBackButton() {
     return OrientationWidget(
         child: MaterialButton(
-            child: Icon(
-              Icons.arrow_back,
-              color: Colors.black87,
-            ),
             color: Colors.white,
-            padding: EdgeInsets.all(10),
-            shape: CircleBorder(),
+            padding: const EdgeInsets.all(10),
+            shape: const CircleBorder(),
             onPressed: () async {
               Navigator.pop(context);
-            }));
+            },
+            child: Icon(
+              getBackArrowIcon(),
+              color: Colors.black87,
+            )));
   }
 
   Widget createFlashbackButton() {
@@ -174,8 +175,8 @@ class CameraScreenState extends State<CameraScreen> {
         child: MaterialButton(
       color: Theme.of(context).colorScheme.primaryContainer,
       onPressed: switchCamera,
-      padding: EdgeInsets.all(10),
-      shape: CircleBorder(),
+      padding: const EdgeInsets.all(10),
+      shape: const CircleBorder(),
       child: Icon(camera_helpers
           .getCameraIcon(cameras[currentCameraIndex].lensDirection)),
     ));
@@ -200,9 +201,9 @@ class CameraScreenState extends State<CameraScreen> {
           print(e);
         }
       },
-      padding: EdgeInsets.all(22),
-      shape: CircleBorder(),
-      child: Icon(Icons.camera),
+      padding: const EdgeInsets.all(22),
+      shape: const CircleBorder(),
+      child: Icon(getCameraIcon()),
     ));
   }
 
@@ -219,8 +220,8 @@ class CameraScreenState extends State<CameraScreen> {
 
   Widget createTopButtonRow() {
     return Row(
-      children: [createBackButton(), createFlashbackButton()],
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [createBackButton(), createFlashbackButton()],
     );
   }
 
@@ -251,7 +252,9 @@ class CameraScreenState extends State<CameraScreen> {
 
 class _MediaSizeClipper extends CustomClipper<Rect> {
   final Size mediaSize;
+
   const _MediaSizeClipper(this.mediaSize);
+
   @override
   Rect getClip(Size size) {
     return Rect.fromLTWH(0, 0, mediaSize.width, mediaSize.height);
