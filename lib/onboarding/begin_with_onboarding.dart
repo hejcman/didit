@@ -26,7 +26,9 @@ class _BeginWithOnBoardingState extends State<BeginWithOnBoarding> {
     final bool displayOnBoarding = prefs.getBool('displayOnBoarding') ?? true;
 
     setState(() {
-      _displayOnBoarding = prefs.setBool('displayOnBoarding', !displayOnBoarding).then((bool success) {
+      _displayOnBoarding = prefs
+          .setBool('displayOnBoarding', !displayOnBoarding)
+          .then((bool success) {
         return displayOnBoarding;
       });
     });
@@ -45,6 +47,7 @@ class _BeginWithOnBoardingState extends State<BeginWithOnBoarding> {
       return prefs.getBool('displayOnBoarding') ?? true;
     });
   }
+
   //
 
   @override
@@ -60,7 +63,9 @@ class _BeginWithOnBoardingState extends State<BeginWithOnBoarding> {
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {
-                return snapshot.data == true ? const OnBoardingView() : widget.home!;
+                return snapshot.data == true
+                    ? const OnBoardingView()
+                    : widget.home!;
               }
           }
         });

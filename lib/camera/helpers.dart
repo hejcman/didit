@@ -3,8 +3,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../storage/schema.dart';
-
 /// Select the platform appropriate camera icon based on the direction
 IconData getCameraIcon(CameraLensDirection direction) {
   switch (direction) {

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:didit/home/homeScreen.dart';
+import 'package:didit/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -12,11 +12,8 @@ import 'common/color_schemes.g.dart';
 // Database
 import 'storage/schema.dart';
 
-// Widgets
-import 'gallery.dart';
-
 // OnBoarding
-import 'onboarding/beginWithOnBoarding.dart';
+import 'onboarding/begin_with_onboarding.dart';
 
 Future<void> main(List<String> args) async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -47,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-      home: BeginWithOnBoarding(home: HomeScreen()),
+      home: const BeginWithOnBoarding(home: HomeScreen()),
     );
   }
 }

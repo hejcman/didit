@@ -1,14 +1,21 @@
-import 'package:didit/globals.dart';
 import 'package:flutter/material.dart';
-import 'package:didit/storage/schema.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import '../photo_detail/photo_detail.dart';
+// Globals
+import '../globals.dart';
+
+// Storage
 import '../storage/adapters.dart';
+import '../storage/schema.dart';
+
+// Photo detail
+import '../photo_detail/photo_detail.dart';
+
+// Platformization
+import '../common/platformization.dart';
 
 class GridGalleryScreen extends StatefulWidget {
-  GridGalleryScreen({super.key, required this.box, required this.tag});
+  const GridGalleryScreen({super.key, required this.box, required this.tag});
 
   final Box<Memory> box;
   final LifetimeTag tag;
@@ -23,7 +30,7 @@ class _GridGalleryScreenState extends State<GridGalleryScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(getBackArrowIcon()),
             onPressed: () async {
               Navigator.pop(context);
             }),
@@ -58,14 +65,14 @@ class _GridGalleryScreenState extends State<GridGalleryScreen> {
 }
 
 class CustomPhotoTile extends StatelessWidget {
-  CustomPhotoTile(
+  const CustomPhotoTile(
       {super.key,
       required this.memory,
       required this.box,
       required this.memories,
       required this.index});
 
-  Memory memory;
+  final Memory memory;
   final Box<Memory> box;
   final List<Memory> memories;
   final int index;

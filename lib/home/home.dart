@@ -1,16 +1,23 @@
-import 'dart:typed_data';
-import 'package:didit/camera/camera.dart';
-import 'package:didit/storage/adapters.dart';
-import 'package:didit/grid_gallery_screen/gridGalleryScreen.dart';
+import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../photo_detail/photo_detail.dart';
-import '../storage/schema.dart';
 
+// Globals
 import '../globals.dart';
 
+// Camera
+import '../camera/camera.dart';
+
+// Storage
+import '../storage/adapters.dart';
+import '../storage/schema.dart';
+
+// Photo detail
+import '../grid_gallery_screen/grid_gallery_screen.dart';
+import '../photo_detail/photo_detail.dart';
+
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,51 +27,47 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        title: Image.asset(
-          "assets/logo/didit_logo_light.png",
-          height: 35,
+        floatingActionButton: const CaptureButton(),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          title: Image.asset("assets/logo/didit_logo_light.png", height: 35),
         ),
-      ),
-      body: SafeArea(
-          child: FutureBuilder(
-        future: Hive.openBox<Memory>(Globals.dbName),
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const CircularProgressIndicator();
-          }
-          return ValueListenableBuilder(
-              valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
-              builder: (BuildContext context, Box<Memory> box, _) {
-                if (box.isEmpty) {
-                  return const Center(child: Text("No images to show."));
-                }
+        body: SafeArea(
+            child: FutureBuilder(
+          future: Hive.openBox<Memory>(Globals.dbName),
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const CircularProgressIndicator();
+            }
+            return ValueListenableBuilder(
+                valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
+                builder: (BuildContext context, Box<Memory> box, _) {
+                  if (box.isEmpty) {
+                    return const Center(child: Text("No images to show."));
+                  }
 
-                deleteOutdatedMemories();
-                final List<LifetimeTag> categories = LifetimeTag.values;
-                return ListView.builder(
-                    padding: EdgeInsets.all(20),
-                    itemCount: categories.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final memories = getMemories(categories[index]);
-                      return OneCategory(
-                        tag: categories[index],
-                        memories: memories,
-                        box: box,
-                      );
-                    });
-              });
-        },
-      )),
-      floatingActionButton: CaptureButton(),
-    );
+                  deleteOutdatedMemories();
+                  const List<LifetimeTag> categories = LifetimeTag.values;
+                  return ListView.builder(
+                      padding: const EdgeInsets.all(20),
+                      itemCount: categories.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final memories = getMemories(categories[index]);
+                        return OneCategory(
+                          tag: categories[index],
+                          memories: memories,
+                          box: box,
+                        );
+                      });
+                });
+          },
+        )));
   }
 }
 
 class CaptureButton extends StatelessWidget {
-  CaptureButton({super.key});
+  const CaptureButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +77,7 @@ class CaptureButton extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const CameraScreen()));
       },
       label: const Text('Capture'),
-      icon: const Icon(Icons.camera_alt),
+      icon: Icon(getCameraIcon()),
     );
   }
 }
@@ -92,10 +95,6 @@ class OneCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (memories == null) {
-      return Text("error");
-    }
-
     return Column(children: [
       Row(
         children: [
@@ -110,17 +109,15 @@ class OneCategory extends StatelessWidget {
                       )));
             },
             child: Row(
-              children: [
-                Text(
-                  "all",
-                ),
-                Icon(Icons.arrow_forward, size: 15),
+              children: <Widget>[
+                const Text("all"),
+                Icon(getArrowForwardIcon(), size: 15),
               ],
             ),
           )
         ],
       ),
-      Container(
+      SizedBox(
         height: 200,
         child: GridView.builder(
             scrollDirection: Axis.horizontal,

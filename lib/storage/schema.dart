@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -63,9 +64,9 @@ extension LifetimeTagExtension on LifetimeTag {
 
   Widget iconWidget({Color? color, Color? textColor}) {
     return Row(children: [
-      Icon(
-        Icons.flag,
-        color: color ?? tagColor(),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        child: Icon(getFlagIcon(), color: color ?? tagColor()),
       ),
       Text(tagName(),
           style: TextStyle(color: textColor ?? (color ?? Colors.black)))
@@ -74,9 +75,12 @@ extension LifetimeTagExtension on LifetimeTag {
 
   Widget shortIconWidget({Color? color, Color? textColor}) {
     return Row(children: [
-      Icon(
-        Icons.flag,
-        color: color ?? tagColor(),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        child: Icon(
+          Icons.flag,
+          color: color ?? tagColor(),
+        ),
       ),
       Text(
         tagShortString(),
