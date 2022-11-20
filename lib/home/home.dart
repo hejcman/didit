@@ -153,7 +153,7 @@ class CustomPhotoTile extends StatelessWidget {
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
               builder: (context) =>
-                  PhotoDetail(box: box, index: index, memories: memories)));
+                  PhotoDetail(index: index, memories: [for (final m in memories) m.key])));
         },
         child: Container(
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),

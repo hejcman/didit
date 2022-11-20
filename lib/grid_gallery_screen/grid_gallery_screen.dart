@@ -55,7 +55,6 @@ class _GridGalleryScreenState extends State<GridGalleryScreen> {
                   Memory memory = memories[index];
                   return CustomPhotoTile(
                       memory: memory,
-                      box: widget.box,
                       memories: memories,
                       index: index);
                 });
@@ -68,12 +67,10 @@ class CustomPhotoTile extends StatelessWidget {
   const CustomPhotoTile(
       {super.key,
       required this.memory,
-      required this.box,
       required this.memories,
       required this.index});
 
   final Memory memory;
-  final Box<Memory> box;
   final List<Memory> memories;
   final int index;
 
@@ -83,7 +80,7 @@ class CustomPhotoTile extends StatelessWidget {
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
               builder: (context) =>
-                  PhotoDetail(box: box, index: index, memories: memories)));
+                  PhotoDetail(index: index, memories: memories)));
         },
         child: Container(
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),

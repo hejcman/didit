@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -14,13 +15,11 @@ import '../storage/adapters.dart';
 import '../storage/schema.dart';
 
 class PhotoDetail extends StatefulWidget {
-  final Box<Memory> box;
-  final List<Memory> memories;
+  final List<dynamic> memories;
   final int index;
 
   const PhotoDetail(
       {Key? key,
-      required this.box,
       required this.index,
       required this.memories})
       : super(key: key);
@@ -32,6 +31,9 @@ class PhotoDetail extends StatefulWidget {
 class PhotoDetailState extends State<PhotoDetail> {
   // default current index is from PhotoDetail class
   late int curIndex;
+  late ValueNotifier<String> timeToExpire;
+  late Memory cachedMemory;
+  late Box<Memory> memoryBox;
 
   PhotoDetailState();
 
@@ -43,7 +45,17 @@ class PhotoDetailState extends State<PhotoDetail> {
   @override
   void initState() {
     super.initState();
+    memoryBox = getMemoryBox();
     curIndex = widget.index;
+    updateMemoryCache();
+    timeToExpire = ValueNotifier(cachedMemory.getTimeToExpire());
+  }
+
+  Memory updateMemoryCache() {
+    debugPrint("Caching new memory");
+    cachedMemory = memoryBox.get(widget.memories[curIndex])!;
+    debugPrint("New memory cached");
+    return cachedMemory;
   }
 
   @override
@@ -64,8 +76,8 @@ class PhotoDetailState extends State<PhotoDetail> {
             FittedBox(
               child: ToggleSwitch(
                 // Indexing the buttons
-                initialLabelIndex: LifetimeTag.values
-                    .indexOf(widget.memories[curIndex].lifetimeTag),
+                initialLabelIndex:
+                    LifetimeTag.values.indexOf(cachedMemory.lifetimeTag),
                 totalSwitches: LifetimeTag.values.length,
                 // Styling
                 animate: true,
@@ -79,10 +91,11 @@ class PhotoDetailState extends State<PhotoDetail> {
                 ],
                 // Callback
                 onToggle: (index) {
-                  if (LifetimeTag.values[index!] !=
-                      widget.memories[curIndex].lifetimeTag) {
-                    updateMemoryTag(
-                        widget.memories[curIndex], LifetimeTag.values[index]);
+                  if (LifetimeTag.values[index!] != cachedMemory.lifetimeTag) {
+                    updateMemoryTag(cachedMemory, LifetimeTag.values[index]);
+                    updateMemoryCache();
+                    cachedMemory.lifetimeTag = LifetimeTag.values[index];
+                    timeToExpire.value = cachedMemory.getTimeToExpire();
                   }
                 },
               ),
@@ -93,7 +106,7 @@ class PhotoDetailState extends State<PhotoDetail> {
                 onPressed: () async {
                   final directory = (await getExternalStorageDirectory())?.path;
                   File imgFile = File('${directory}assets/screenshot.png');
-                  imgFile.writeAsBytes(widget.memories[curIndex].pictureBytes);
+                  imgFile.writeAsBytes(cachedMemory.pictureBytes);
                   await Share.shareXFiles(
                       [XFile('${directory}assets/screenshot.png')]);
                   imgFile.delete();
@@ -109,7 +122,7 @@ class PhotoDetailState extends State<PhotoDetail> {
                       actions: <Widget>[
                         TextButton(
                           onPressed: () async {
-                            deleteMemory(widget.memories[curIndex]);
+                            deleteMemory(cachedMemory);
                             // two pop
                             Navigator.of(context)
                                 .popUntil((_) => popScreenCount++ >= 2);
@@ -135,12 +148,12 @@ class PhotoDetailState extends State<PhotoDetail> {
               onPageChanged: (int index) {
                 setState(() {
                   curIndex = index;
+                  updateMemoryCache();
                 });
               },
               builder: (BuildContext context, int index) {
                 return PhotoViewGalleryPageOptions(
-                    imageProvider:
-                        MemoryImage(widget.memories[index].pictureBytes),
+                    imageProvider: MemoryImage(cachedMemory.pictureBytes),
                     heroAttributes: PhotoViewHeroAttributes(tag: index),
                     maxScale: PhotoViewComputedScale.covered * 3,
                     minScale: PhotoViewComputedScale.contained,
@@ -158,7 +171,7 @@ class PhotoDetailState extends State<PhotoDetail> {
                   height: 30.0,
                   child: CircularProgressIndicator(
                     value: event != null
-                        ? event.cumulativeBytesLoaded / widget.box.length
+                        ? event.cumulativeBytesLoaded / memoryBox.length
                         : 0,
                   ),
                 ),
@@ -168,18 +181,23 @@ class PhotoDetailState extends State<PhotoDetail> {
               child: Align(
                 alignment: AlignmentDirectional.topEnd,
                 child: Container(
-                  margin: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    color: Colors.black87.withOpacity(0.5),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    "Deleted in: ${widget.memories[curIndex].getTimeToExpire()}",
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w300),
-                  ),
-                ),
+                    margin: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      color: Colors.black87.withOpacity(0.5),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: ValueListenableBuilder<String>(
+                      valueListenable: timeToExpire,
+                      builder:
+                          (BuildContext context, String value, Widget? child) {
+                        print("Text updated!");
+                        return Text("Deleted in: ${timeToExpire.value}",
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w300));
+                      },
+                    )),
               ),
             ),
           ],
