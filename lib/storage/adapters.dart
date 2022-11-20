@@ -17,9 +17,10 @@ void createMemory(Memory memory) {
 
 /// Update the tag of a memory -
 /// delete the memory object from the database and create new one with new tag
-void updateMemoryTag(Memory memory, LifetimeTag newTag) {
-  deleteMemory(memory);
-  createMemory(Memory(memory.created, memory.pictureBytes, newTag));
+void updateMemory(Memory memory) {
+  var box = getMemoryBox();
+  box.put(memory.key, memory);
+  box.flush();
 }
 
 /// Delete the memory object from the database.
