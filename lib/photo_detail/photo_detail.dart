@@ -18,10 +18,11 @@ class PhotoDetail extends StatefulWidget {
   final List<dynamic> memories;
   final int index;
 
-  const PhotoDetail(
-      {Key? key,
-      required this.index,
-      required this.memories})
+  /// A widget for showing a detailed view of a photograph.
+  ///
+  /// @param this.index The index of the currently selected image in the list of memories.
+  /// @param this.memories The keys of all the memories to include in the image view.
+  const PhotoDetail({Key? key, required this.index, required this.memories})
       : super(key: key);
 
   @override
@@ -29,7 +30,6 @@ class PhotoDetail extends StatefulWidget {
 }
 
 class PhotoDetailState extends State<PhotoDetail> {
-  // default current index is from PhotoDetail class
   late int curIndex;
   late ValueNotifier<String> timeToExpire;
   late Memory cachedMemory;
@@ -37,8 +37,6 @@ class PhotoDetailState extends State<PhotoDetail> {
 
   PhotoDetailState();
 
-  // variables I don't want to change in build method with calling setState
-  //Menu? _selectedMenu;
   PhotoViewScaleStateController scaleStateController =
       PhotoViewScaleStateController();
 
@@ -51,10 +49,9 @@ class PhotoDetailState extends State<PhotoDetail> {
     timeToExpire = ValueNotifier(cachedMemory.getTimeToExpire());
   }
 
+  /// Update the cached memory.
   Memory updateMemoryCache() {
-    debugPrint("Caching new memory");
     cachedMemory = memoryBox.get(widget.memories[curIndex])!;
-    debugPrint("New memory cached");
     return cachedMemory;
   }
 
@@ -81,6 +78,8 @@ class PhotoDetailState extends State<PhotoDetail> {
                 totalSwitches: LifetimeTag.values.length,
                 // Styling
                 animate: true,
+                animationDuration: 200,
+                curve: Curves.easeInOutCirc,
                 radiusStyle: true,
                 cornerRadius: 25,
                 inactiveFgColor: Colors.white,
@@ -92,9 +91,9 @@ class PhotoDetailState extends State<PhotoDetail> {
                 // Callback
                 onToggle: (index) {
                   if (LifetimeTag.values[index!] != cachedMemory.lifetimeTag) {
-                    updateMemoryTag(cachedMemory, LifetimeTag.values[index]);
-                    updateMemoryCache();
                     cachedMemory.lifetimeTag = LifetimeTag.values[index];
+                    cachedMemory.created = DateTime.now();
+                    updateMemory(cachedMemory);
                     timeToExpire.value = cachedMemory.getTimeToExpire();
                   }
                 },
@@ -191,7 +190,6 @@ class PhotoDetailState extends State<PhotoDetail> {
                       valueListenable: timeToExpire,
                       builder:
                           (BuildContext context, String value, Widget? child) {
-                        print("Text updated!");
                         return Text("Deleted in: ${timeToExpire.value}",
                             style: const TextStyle(
                                 color: Colors.white,
