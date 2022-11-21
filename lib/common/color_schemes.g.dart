@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+extension DarkMode on BuildContext {
+
+  /// Check whether we currently use the dark mode or the light mode.
+  bool get isDarkMode {
+    final brightness = MediaQuery.of(this).platformBrightness;
+    return brightness == Brightness.dark;
+  }
+}
+
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,
   primary: Color(0xFF6F4DA0),

@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:didit/common/platformization.dart';
+import 'package:didit/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
+import '../globals.dart';
 
 class OnBoardingView extends StatefulWidget {
   const OnBoardingView({super.key});
@@ -19,26 +20,15 @@ class _OnBoardingViewState extends State<OnBoardingView> {
   int _pageIndex = 0;
   bool _lastPage = false;
 
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  late Future<bool> _displayOnBoarding;
-
   Future<void> changeFirstVisit() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool displayOnBoarding = prefs.getBool('displayOnBoarding') ?? true;
-
-    setState(() {
-      _displayOnBoarding = prefs
-          .setBool('displayOnBoarding', !displayOnBoarding)
-          .then((bool success) {
-        return displayOnBoarding;
-      });
-    });
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(Settings.showOnboarding.key, false);
   }
 
   @override
   void initState() {
-    _pageController = PageController(initialPage: 0);
     super.initState();
+    _pageController = PageController(initialPage: 0);
   }
 
   @override
@@ -89,12 +79,9 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                         // style: ElevatedButton.styleFrom(shape: const CircleBorder()),
                         style: ButtonStyle(
                           //backgroundColor: MaterialStateProperty.all<Color?>(Colors.teal[700]),
-                          shape: MaterialStateProperty.all<CircleBorder?>(
-                              const CircleBorder()),
+                          shape: MaterialStateProperty.all<CircleBorder?>(const CircleBorder()),
                         ),
-                        child: Icon(_lastPage
-                            ? getCameraIcon()
-                            : getArrowForwardIcon()),
+                        child: Icon(_lastPage ? getCameraIcon() : getArrowForwardIcon()),
                       )),
                 ],
               )
@@ -109,10 +96,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
     if (_lastPage) {
       changeFirstVisit();
 
-      Navigator.pushReplacement(
-          context,
-          // Redirect to Homepage
-          MaterialPageRoute(builder: (context) => const MyApp()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
       return;
     }
     _pageController.nextPage(
@@ -155,8 +139,7 @@ class DotIndicator extends StatelessWidget {
 class Onboard {
   final String lottie, title, description;
 
-  Onboard(
-      {required this.lottie, required this.title, required this.description});
+  Onboard({required this.lottie, required this.title, required this.description});
 }
 
 final List<OnBoardingSlide> onBoardingSlidesData = [
@@ -174,8 +157,7 @@ final List<OnBoardingSlide> onBoardingSlidesData = [
   ),
   const OnBoardingSlide(
     lottie: 'assets/lottie/trash.json',
-    title:
-        "After set expiration, expired photos will get deleted automatically!",
+    title: "After set expiration, expired photos will get deleted automatically!",
     description: "So you don't need to worry about storage space anymore. "
         "You can store your photos prior to the expiration.",
   ),
