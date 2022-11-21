@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 // Settings
 import 'globals.dart';
@@ -22,7 +23,8 @@ import 'home/home.dart';
 Future<void> main(List<String> args) async {
   // Ensure that plugin services are initialized so that `availableCameras()`
   // can be called before `runApp()`
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // Prepare the DB
   await Hive.initFlutter();
@@ -30,10 +32,11 @@ Future<void> main(List<String> args) async {
   Hive.openBox<Memory>(Globals.dbName);
 
   // Prepare the default settings
-  var prefs = await SharedPreferences.getInstance();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
   setDefaults(prefs, overwrite: false);
 
   // Launch the app
+  FlutterNativeSplash.remove();
   runApp(MyApp(onboarding: prefs.getBool(Settings.showOnboarding.key)!));
 }
 
@@ -52,6 +55,11 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
         darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-        home: widget.onboarding ? const OnBoardingView() : const HomeScreen());
+        initialRoute: widget.onboarding ? '/onboarding' : '/',
+        routes: {
+          '/': (context) => const HomeScreen(),
+          '/onboarding': (context) => const OnBoardingView(),
+        },
+    );
   }
 }
