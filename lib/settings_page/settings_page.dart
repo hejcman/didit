@@ -50,8 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: FutureBuilder(
+    return FutureBuilder(
       future: _prefs,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snap) {
         if (snap.connectionState != ConnectionState.done) {
@@ -136,6 +135,6 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ));
       },
-    ));
+    );
   }
 }

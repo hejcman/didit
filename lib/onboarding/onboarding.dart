@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:didit/common/platformization.dart';
-import 'package:didit/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -96,7 +95,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
     if (_lastPage) {
       changeFirstVisit();
 
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
       return;
     }
     _pageController.nextPage(

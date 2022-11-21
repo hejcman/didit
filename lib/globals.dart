@@ -37,7 +37,8 @@ enum Settings {
 ///                  them with the defaults.
 void setDefaults(SharedPreferences prefs, {bool overwrite = false}) {
   for (final s in Settings.values) {
-    if (prefs.get(s.key) != s.defaultValue && overwrite) {
+    final currentValue = prefs.get(s.key);
+    if ((currentValue == null) || (currentValue != s.defaultValue && overwrite)) {
       switch (s.defaultValue.runtimeType) {
         case bool:
           prefs.setBool(s.key, s.defaultValue);
