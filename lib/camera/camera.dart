@@ -4,6 +4,7 @@ import 'package:didit/camera/widgets.dart';
 import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Camera helpers
 import 'helpers.dart' as camera_helpers;
@@ -14,6 +15,9 @@ import '../common/orientation_widget.dart';
 // Storage
 import '../storage/adapters.dart';
 import '../storage/schema.dart';
+
+// Globals
+import '../globals.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -27,13 +31,18 @@ class CameraScreenState extends State<CameraScreen> {
   late Future<void> cameraControllerFuture;
   late List<CameraDescription> cameras;
   late int currentCameraIndex;
+  late SharedPreferences prefs;
 
   FlashMode flashMode = FlashMode.values[0];
   LifetimeTag lifetimeTag = LifetimeTag.values[0];
 
   Future initCamera(CameraDescription cameraDescription) async {
+    prefs = await SharedPreferences.getInstance();
+
+    debugPrint(prefs.getInt("camera_quality")!.toString());
+
     cameraController = CameraController(
-        cameraDescription, ResolutionPreset.veryHigh,
+        cameraDescription, ResolutionPreset.values[prefs.getInt(Settings.cameraQuality.key)!],
         enableAudio: false, imageFormatGroup: ImageFormatGroup.jpeg);
     // cameraController.addListener(() {
     //   if (mounted) {
@@ -166,8 +175,7 @@ class CameraScreenState extends State<CameraScreen> {
   }
 
   Widget createTagButton() {
-    return OrientationWidget(
-        child: TagButton(parentCallback: incrementLifetimeTag));
+    return OrientationWidget(child: TagButton(parentCallback: incrementLifetimeTag));
   }
 
   Widget createSwitchCameraButton() {
@@ -177,8 +185,7 @@ class CameraScreenState extends State<CameraScreen> {
       onPressed: switchCamera,
       padding: const EdgeInsets.all(10),
       shape: const CircleBorder(),
-      child: Icon(camera_helpers
-          .getCameraIcon(cameras[currentCameraIndex].lensDirection)),
+      child: Icon(camera_helpers.getCameraIcon(cameras[currentCameraIndex].lensDirection)),
     ));
   }
 
@@ -193,8 +200,7 @@ class CameraScreenState extends State<CameraScreen> {
           // Attempt to take a picture
           final image = await cameraController.takePicture();
           // Create memory from the image
-          final memory = Memory(await image.lastModified(),
-              await image.readAsBytes(), lifetimeTag);
+          final memory = Memory(await image.lastModified(), await image.readAsBytes(), lifetimeTag);
           // Save Memory to database
           createMemory(memory);
         } catch (e) {
@@ -232,9 +238,7 @@ class CameraScreenState extends State<CameraScreen> {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            Align(
-                alignment: AlignmentDirectional.center,
-                child: createCameraView()),
+            Align(alignment: AlignmentDirectional.center, child: createCameraView()),
             SafeArea(
                 child: Align(
               alignment: AlignmentDirectional.topCenter,
