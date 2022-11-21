@@ -70,12 +70,30 @@ class _SettingsPageState extends State<SettingsPage> {
                 IconButton(
                     icon: Icon(getDeleteIcon()),
                     onPressed: () {
-                      setDefaults(prefs, overwrite: true);
-                      // Setting the defaults shouldn't launch the onboarding
-                      prefs.setBool(Settings.showOnboarding.key, false);
-                      // Send a signal to refresh the settings page
-                      debugPrint("Resetting the settings.");
-                      prefsUpdated.value = !prefsUpdated.value;
+                      showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                                title: const Text("Do you want to reset all the settings to their defaults?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () async {
+                                      setDefaults(prefs, overwrite: true);
+                                      // Setting the defaults shouldn't launch the onboarding
+                                      prefs.setBool(Settings.showOnboarding.key, false);
+                                      // Send a signal to refresh the settings page
+                                      debugPrint("Resetting the settings.");
+                                      prefsUpdated.value = !prefsUpdated.value;
+                                      // Close the dialog
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Yes'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                                    child: const Text('Cancel'),
+                                  ),
+                                ],
+                              ));
                     })
               ],
             ),
