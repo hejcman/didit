@@ -1,3 +1,4 @@
+import 'package:didit/common/color_schemes.g.dart';
 import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Image.asset("assets/logo/didit_logo_light.png", height: 35),
           actions: <Widget>[
             IconButton(
-              icon: Icon(getSettingsIcon()),
+              icon: Icon(getSettingsIcon(), color: context.isDarkMode ? darkColorScheme.primary : lightColorScheme.primary),
               onPressed: () async {
                 await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SettingsPage()));
               },

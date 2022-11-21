@@ -22,6 +22,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final List<ResolutionPreset> resolutions = ResolutionPreset.values.toList();
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final ValueNotifier<bool> prefsUpdated = ValueNotifier(false);
   late SharedPreferences prefs;
 
   @override
@@ -29,11 +30,6 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
     _prefs.then((value) => prefs = value);
   }
-
-  //
-  // Future<void> getPreferences() async {
-  //   prefs = await SharedPreferences.getInstance();
-  // }
 
   String resolutionToString(ResolutionPreset resolution) {
     switch (resolution) {
@@ -55,7 +51,13 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
+        child: FutureBuilder(
+      future: _prefs,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snap) {
+        if (snap.connectionState != ConnectionState.done) {
+          return const CircularProgressIndicator();
+        }
+        return Scaffold(
             appBar: AppBar(
               leading: IconButton(
                 icon: Icon(getBackArrowIcon()),
@@ -63,14 +65,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   Navigator.pop(context);
                 },
               ),
-              title: const Text("Settings")
+              title: const Text("Settings"),
+              actions: <Widget>[
+                IconButton(
+                    icon: Icon(getDeleteIcon()),
+                    onPressed: () {
+                      setDefaults(prefs, overwrite: true);
+                      // Setting the defaults shouldn't launch the onboarding
+                      prefs.setBool(Settings.showOnboarding.key, false);
+                      // Send a signal to refresh the settings page
+                      debugPrint("Resetting the settings.");
+                      prefsUpdated.value = !prefsUpdated.value;
+                    })
+              ],
             ),
-            body: FutureBuilder(
-              future: _prefs,
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snap) {
-                if (snap.connectionState != ConnectionState.done) {
-                  return const CircularProgressIndicator();
-                }
+            body: ValueListenableBuilder(
+              valueListenable: prefsUpdated,
+              builder: (BuildContext context, bool value, Widget? child) {
                 return ListView(
                   padding: const EdgeInsets.all(10),
                   children: <Widget>[
@@ -105,6 +116,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 );
               },
-            )));
+            ));
+      },
+    ));
   }
 }
