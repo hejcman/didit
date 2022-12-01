@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,15 +5,9 @@ import 'package:flutter/cupertino.dart';
 
 StatelessWidget getAlertDialog(String title, List<Widget> actions) {
   if (Platform.isIOS) {
-    return CupertinoAlertDialog(
-      title: Text(title),
-      actions: actions
-    );
+    return CupertinoAlertDialog(title: Text(title), actions: actions);
   } else {
-    return AlertDialog(
-      title: Text(title),
-      actions: actions
-    );
+    return AlertDialog(title: Text(title), actions: actions);
   }
 }
 
