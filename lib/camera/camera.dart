@@ -33,6 +33,8 @@ class CameraScreenState extends State<CameraScreen> {
   late int currentCameraIndex;
   late SharedPreferences prefs;
 
+  late int frontCameraIndex; //index of front camera
+
   FlashMode flashMode = FlashMode.values[0];
   LifetimeTag lifetimeTag = LifetimeTag.values[0];
 
@@ -41,8 +43,8 @@ class CameraScreenState extends State<CameraScreen> {
 
     debugPrint(prefs.getInt("camera_quality")!.toString());
 
-    cameraController = CameraController(
-        cameraDescription, ResolutionPreset.values[prefs.getInt(Settings.cameraQuality.key)!],
+    cameraController = CameraController(cameraDescription,
+        ResolutionPreset.values[prefs.getInt(Settings.cameraQuality.key)!],
         enableAudio: false, imageFormatGroup: ImageFormatGroup.jpeg);
     // cameraController.addListener(() {
     //   if (mounted) {
@@ -74,6 +76,10 @@ class CameraScreenState extends State<CameraScreen> {
       }
       // Initialize the cameras
       cameras = c;
+
+      frontCameraIndex = cameras.indexWhere(
+          (element) => element.lensDirection == CameraLensDirection.front);
+
       setState(() {
         currentCameraIndex = 0;
       });
@@ -86,10 +92,14 @@ class CameraScreenState extends State<CameraScreen> {
   /// Increment camera index with overflow check
   void switchCamera() {
     // Select the next camera
-    if (currentCameraIndex < cameras.length - 1) {
-      currentCameraIndex += 1;
+    if (currentCameraIndex != 0) {
+      setState(() {
+        currentCameraIndex = 0;
+      });
     } else {
-      currentCameraIndex = 0;
+      setState(() {
+        currentCameraIndex = frontCameraIndex;
+      });
     }
     // Initialize it
     initCamera(cameras[currentCameraIndex]);
@@ -151,44 +161,6 @@ class CameraScreenState extends State<CameraScreen> {
         });
   }
 
-  Widget createBackButton() {
-    return OrientationWidget(
-        child: MaterialButton(
-            color: Colors.white,
-            padding: const EdgeInsets.all(10),
-            shape: const CircleBorder(),
-            onPressed: () async {
-              Navigator.pop(context);
-            },
-            child: Icon(
-              getBackArrowIcon(),
-              color: Colors.black87,
-            )));
-  }
-
-  Widget createFlashbackButton() {
-    return OrientationWidget(
-      child: FlashButton(
-        parentCallback: incrementFlashMode,
-      ),
-    );
-  }
-
-  Widget createTagButton() {
-    return OrientationWidget(child: TagButton(parentCallback: incrementLifetimeTag));
-  }
-
-  Widget createSwitchCameraButton() {
-    return OrientationWidget(
-        child: MaterialButton(
-      color: Theme.of(context).colorScheme.primaryContainer,
-      onPressed: switchCamera,
-      padding: const EdgeInsets.all(10),
-      shape: const CircleBorder(),
-      child: Icon(camera_helpers.getCameraIcon(cameras[currentCameraIndex].lensDirection)),
-    ));
-  }
-
   Widget createCaptureButton() {
     return OrientationWidget(
         child: MaterialButton(
@@ -200,7 +172,8 @@ class CameraScreenState extends State<CameraScreen> {
           // Attempt to take a picture
           final image = await cameraController.takePicture();
           // Create memory from the image
-          final memory = Memory(await image.lastModified(), await image.readAsBytes(), lifetimeTag);
+          final memory = Memory(await image.lastModified(),
+              await image.readAsBytes(), lifetimeTag);
           // Save Memory to database
           createMemory(memory);
         } catch (e) {
@@ -217,9 +190,13 @@ class CameraScreenState extends State<CameraScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        createTagButton(),
+        TagButton(onPressed: incrementLifetimeTag),
         createCaptureButton(),
-        createSwitchCameraButton(),
+        ActionButton(
+          onPressed: switchCamera,
+          child: Icon(camera_helpers
+              .getCameraIcon(cameras[currentCameraIndex].lensDirection)),
+        ),
       ],
     );
   }
@@ -227,7 +204,19 @@ class CameraScreenState extends State<CameraScreen> {
   Widget createTopButtonRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [createBackButton(), createFlashbackButton()],
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ActionButton(
+            color: Colors.white,
+            onPressed: () async {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              getBackArrowIcon(),
+              color: Colors.black87,
+            )),
+        FlashButton(onPressed: incrementFlashMode)
+      ],
     );
   }
 
@@ -238,7 +227,9 @@ class CameraScreenState extends State<CameraScreen> {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            Align(alignment: AlignmentDirectional.center, child: createCameraView()),
+            Align(
+                alignment: AlignmentDirectional.center,
+                child: createCameraView()),
             SafeArea(
                 child: Align(
               alignment: AlignmentDirectional.topCenter,
