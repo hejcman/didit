@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,8 +33,10 @@ Future<void> main(List<String> args) async {
   Hive.openBox<Memory>(Globals.dbName);
 
   // Prepare the default settings
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs = await SharedPreferences.getInstance();
   setDefaults(prefs, overwrite: false);
+
+  cameras = await availableCameras();
 
   // Launch the app
   FlutterNativeSplash.remove();

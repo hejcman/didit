@@ -1,7 +1,14 @@
 
+import 'package:camera/camera.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 ///// GLOBAL VARIABLES /////
+
+// A list of all the available cameras
+List<CameraDescription> cameras = [];
+
+// Instance of preferences
+late SharedPreferences prefs;
 
 class Globals {
   /// The name of the DB in which the memories are stored.
