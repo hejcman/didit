@@ -1,16 +1,18 @@
 import 'dart:developer';
 
-import 'package:didit/camera/widgets.dart';
-import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:vibration/vibration.dart';
 
 // Camera helpers
+import 'widgets.dart';
 import 'helpers.dart' as camera_helpers;
 
 // Common widgets
 import '../common/orientation_widget.dart';
+import '../common/platformization.dart';
 
 // Storage
 import '../storage/adapters.dart';
@@ -28,16 +30,16 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver {
 
-  // The index of the currently selected camera
-  int currentCameraIndex = 0;
   // The controller for the currently selected camera
-  CameraController? cameraController;
+  CameraController? _cameraController;
+
+  // The index of the currently selected camera
+  int _currentCameraIndex = 0;
+
+  // The state of the currently selected controller
   bool _cameraControllerInitialized = false;
 
-  late bool cameraPermission;
-
-  // Index of the front camera
-  late int frontCameraIndex;
+  bool _enableVibration = false;
 
   FlashMode flashMode = FlashMode.values[0];
   LifetimeTag lifetimeTag = LifetimeTag.values[0];
@@ -48,30 +50,35 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   @override
   void initState() {
     super.initState();
-    // Get preferences
-
+    // If we have no cameras, return home
+    if (cameras.isEmpty) returnHome();
 
     // Get the permission to use a camera
     obtainCameraPermission();
 
-    if (cameras.isEmpty) returnHome();
+    Vibration.hasVibrator().then((value) {
+      // If we don't get anything, leave it as false
+      if (value == null) return;
 
-    frontCameraIndex = cameras.indexWhere(
-        (element) => element.lensDirection == CameraLensDirection.front
-    );
+      // Check whether we have the proper settings value
+      bool? userPref = prefs.getBool(Settings.enableVibration.key);
+      userPref ??= true; // if null, assume true
 
-    initCamera(cameras[currentCameraIndex]);
+      _enableVibration = userPref && value;
+    });
+
+    initCamera();
   }
 
   @override
   void dispose() {
-    cameraController!.dispose();
+    _cameraController!.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final CameraController? cam = cameraController;
+    final CameraController? cam = _cameraController;
 
     // App state changed before we got the chance to initialize.
     if (cam == null || !cam.value.isInitialized) {
@@ -81,20 +88,19 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     if (state == AppLifecycleState.inactive) {
       cam.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      initCamera(cameras[currentCameraIndex]);
+      initCamera();
     }
   }
-
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /// INITS
 
   /// Initialize the passed CameraDescription.
-  void initCamera(CameraDescription cameraDescription) async {
-    final previousCameraController = cameraController;
+  void initCamera() async {
+    final previousCameraController = _cameraController;
     // Create a new camera controller
     CameraController newCameraController = CameraController(
-        cameraDescription,
+        cameras[_currentCameraIndex],
         ResolutionPreset.values[prefs.getInt(Settings.cameraQuality.key)!],
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.jpeg
@@ -104,7 +110,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     if (mounted) {
       setState(() {
         _cameraControllerInitialized = false;
-        cameraController = newCameraController;
+        _cameraController = newCameraController;
       });
     }
 
@@ -117,8 +123,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     });
 
     // TODO: Present error and go back to the home screen
-    if (cameraController!.value.hasError) {
-      print(cameraController!.value.errorDescription);
+    if (_cameraController!.value.hasError) {
+      log("${_cameraController!.value.errorDescription}");
     }
 
     try {
@@ -130,7 +136,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
     if (mounted) {
       setState(() {
-        _cameraControllerInitialized = cameraController!.value.isInitialized;
+        _cameraControllerInitialized = _cameraController!.value.isInitialized;
       });
     }
   }
@@ -155,20 +161,13 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
   }
 
-  /// Increment camera index with overflow check
-  void switchCamera() {
-    // Select the next camera
-    if (currentCameraIndex != 0) {
-      setState(() {
-        currentCameraIndex = 0;
-      });
-    } else {
-      setState(() {
-        currentCameraIndex = frontCameraIndex;
-      });
-    }
-    // Initialize it
-    initCamera(cameras[currentCameraIndex]);
+  /// Loop through all the camera indexes.
+  void incrementCamera() {
+    log("Updating the currently selected camera, current index: $_currentCameraIndex/${cameras.length}");
+    final nextIndex = (_currentCameraIndex + 1) % cameras.length;
+    _currentCameraIndex = nextIndex;
+    initCamera();
+    log("The updated camera index: $_currentCameraIndex/${cameras.length}");
   }
 
   /// Loop through the flash modes.
@@ -177,10 +176,11 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     // Modulo allows for looping back to the first value
     final nextIndex = (flashMode.index + 1) % FlashMode.values.length;
     flashMode = FlashMode.values[nextIndex];
-    cameraController!.setFlashMode(flashMode);
+    _cameraController!.setFlashMode(flashMode);
     log("Flash mode updated, new state: ${flashMode.name}");
   }
 
+  /// Loop through all the lifetime tags.
   void incrementLifetimeTag() {
     log("Updating the lifetime tag, current state: ${lifetimeTag.name}");
     final nextIndex = (lifetimeTag.index + 1) % LifetimeTag.values.length;
@@ -190,32 +190,33 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
   /// Set the current camera zoom
   Future<void> setCameraZoom(double zoom) async {
-    double minZoomLevel = await cameraController!.getMinZoomLevel();
-    double maxZoomLevel = await cameraController!.getMaxZoomLevel();
+    double minZoomLevel = await _cameraController!.getMinZoomLevel();
+    double maxZoomLevel = await _cameraController!.getMaxZoomLevel();
 
     // If the minimum zoom level is larger than the supplied zoom level,
     // zoom the camera out as much as possible.
     if (zoom < minZoomLevel) {
-      cameraController!.setZoomLevel(minZoomLevel);
+      _cameraController!.setZoomLevel(minZoomLevel);
 
       // If we are within the bounds of allowed zoomed levels, just set the zoom
       // level.
     } else if (zoom < maxZoomLevel) {
-      cameraController!.setZoomLevel(zoom);
+      _cameraController!.setZoomLevel(zoom);
 
       // If we exceed the maximum zoom level, set it.
     } else {
-      cameraController!.setZoomLevel(maxZoomLevel);
+      _cameraController!.setZoomLevel(maxZoomLevel);
     }
   }
 
+  /// Set the focus point of the current camera.
   setCameraFocus(TapDownDetails details, BoxConstraints constraints) {
     final offset = Offset(
       details.localPosition.dx / constraints.maxWidth,
       details.localPosition.dy / constraints.maxHeight
     );
-    cameraController!.setFocusPoint(offset);
-    cameraController!.setExposurePoint(offset);
+    _cameraController!.setFocusPoint(offset);
+    _cameraController!.setExposurePoint(offset);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -224,11 +225,11 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Widget createCameraView() {
     // Camera is not ready, show the loading indicator
     if (!_cameraControllerInitialized) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: loadingIndicator(context));
     }
-
+    // If the camera is ready, we can show it
     return CameraPreview(
-      cameraController!,
+      _cameraController!,
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return GestureDetector(
@@ -246,15 +247,20 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       color: Colors.white,
       onPressed: () async {
         try {
+          if (_enableVibration) {
+            Vibration.vibrate(duration: 30);
+          }
+
           // Attempt to take a picture
-          final image = await cameraController!.takePicture();
+          final image = await _cameraController!.takePicture();
+
           // Create memory from the image
           final memory = Memory(await image.lastModified(),
               await image.readAsBytes(), lifetimeTag);
           // Save Memory to database
           createMemory(memory);
         } catch (e) {
-          print(e);
+          log("$e");
         }
       },
       padding: const EdgeInsets.all(22),
@@ -270,9 +276,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         TagButton(onPressed: incrementLifetimeTag),
         createCaptureButton(),
         ActionButton(
-          onPressed: switchCamera,
+          onPressed: incrementCamera,
           child: Icon(camera_helpers
-              .getCameraIcon(cameras[currentCameraIndex].lensDirection)),
+              .getCameraIcon(cameras[_currentCameraIndex].lensDirection)),
         ),
       ],
     );

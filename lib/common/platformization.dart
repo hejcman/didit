@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'color_schemes.g.dart';
+
 StatelessWidget getAlertDialog(String title, List<Widget> actions) {
   if (Platform.isIOS) {
     return CupertinoAlertDialog(title: Text(title), actions: actions);
@@ -64,5 +66,16 @@ IconData getSettingsIcon() {
     return CupertinoIcons.settings;
   } else {
     return Icons.settings;
+  }
+}
+
+Widget loadingIndicator(BuildContext context) {
+
+  Color color = context.isDarkMode ? darkColorScheme.primary : lightColorScheme.primary;
+
+  if (Platform.isIOS) {
+    return CupertinoActivityIndicator(color: color);
+  } else {
+    return CircularProgressIndicator(color: color);
   }
 }

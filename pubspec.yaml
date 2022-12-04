@@ -52,6 +52,7 @@ dependencies:
   native_device_orientation: ^1.1.4
   shared_preferences: ^2.0.15
   permission_handler: ^10.2.0
+  vibration: ^1.7.6
 
   # Dependencies for image detail
   photo_view: ^0.14.0

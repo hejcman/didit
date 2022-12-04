@@ -28,6 +28,12 @@ enum Settings {
       key: "show_onboarding",
       defaultValue: true,
       description: "Whether to show the onboarding screen on the next startup of the application."
+  ),
+
+  enableVibration(
+      key: "enable_vibration",
+      defaultValue: true,
+      description: "Whether to provide shutter feedback to the user using vibrations."
   );
 
   final String key;

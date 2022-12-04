@@ -129,6 +129,20 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
                               ],
                             ))),
                     Card(
+                        child: Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                            child: Row(
+                              children: <Widget>[
+                                const Expanded(child: Text("Enable shutter vibration")),
+                                Switch(
+                                    value: prefs.getBool(Settings.enableVibration.key)!,
+                                    onChanged: (value) {
+                                      prefs.setBool(Settings.enableVibration.key, value);
+                                      setState(() {value = value;});
+                                    })
+                              ],
+                            ))),
+                    Card(
                         child: TextButton(
                             onPressed: () async {
                               await Navigator.of(context).push(

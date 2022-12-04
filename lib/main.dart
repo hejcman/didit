@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -26,6 +27,9 @@ Future<void> main(List<String> args) async {
   // can be called before `runApp()`
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // Make sure the device is always in portrait mode
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Prepare the DB
   await Hive.initFlutter();
