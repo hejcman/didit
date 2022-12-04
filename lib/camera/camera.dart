@@ -1,16 +1,18 @@
 import 'dart:developer';
 
-import 'package:didit/camera/widgets.dart';
-import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:vibration/vibration.dart';
 
 // Camera helpers
+import 'widgets.dart';
 import 'helpers.dart' as camera_helpers;
 
 // Common widgets
 import '../common/orientation_widget.dart';
+import '../common/platformization.dart';
 
 // Storage
 import '../storage/adapters.dart';
@@ -23,86 +25,149 @@ class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
 
   @override
-  CameraScreenState createState() => CameraScreenState();
+  State<CameraScreen> createState() => _CameraScreenState();
 }
 
-class CameraScreenState extends State<CameraScreen> {
-  late CameraController cameraController;
-  late Future<void> cameraControllerFuture;
-  late List<CameraDescription> cameras;
-  late int currentCameraIndex;
-  late SharedPreferences prefs;
+class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver {
 
-  late int frontCameraIndex; //index of front camera
+  // The controller for the currently selected camera
+  CameraController? _cameraController;
+
+  // The index of the currently selected camera
+  int _currentCameraIndex = 0;
+
+  // The state of the currently selected controller
+  bool _cameraControllerInitialized = false;
+
+  bool _enableVibration = false;
 
   FlashMode flashMode = FlashMode.values[0];
   LifetimeTag lifetimeTag = LifetimeTag.values[0];
 
-  Future initCamera(CameraDescription cameraDescription) async {
-    prefs = await SharedPreferences.getInstance();
-
-    debugPrint(prefs.getInt("camera_quality")!.toString());
-
-    cameraController = CameraController(cameraDescription,
-        ResolutionPreset.values[prefs.getInt(Settings.cameraQuality.key)!],
-        enableAudio: false, imageFormatGroup: ImageFormatGroup.jpeg);
-    // cameraController.addListener(() {
-    //   if (mounted) {
-    //     setState(() {});
-    //   }
-    // });
-
-    // TODO: Present error and go back to the home screen
-    if (cameraController.value.hasError) {
-      print(cameraController.value.errorDescription);
-    }
-
-    try {
-      cameraControllerFuture = cameraController.initialize();
-    } catch (e) {
-      print("Problem initializing the camera.");
-    }
-  }
-
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /// OVERRIDES
+  ///
   @override
   void initState() {
     super.initState();
-    // Get the list of cameras that are available to use
-    availableCameras().then((List<CameraDescription> c) {
-      // No cameras available
-      // TODO: Present error and go back to the home screen
-      if (c.isEmpty) {
-        print("No cameras available!");
-      }
-      // Initialize the cameras
-      cameras = c;
+    // If we have no cameras, return home
+    if (cameras.isEmpty) returnHome();
 
-      frontCameraIndex = cameras.indexWhere(
-          (element) => element.lensDirection == CameraLensDirection.front);
+    // Get the permission to use a camera
+    obtainCameraPermission();
 
-      setState(() {
-        currentCameraIndex = 0;
-      });
-      initCamera(cameras[currentCameraIndex]);
-    }).catchError((e) {
-      FlutterError.presentError(e);
+    Vibration.hasVibrator().then((value) {
+      // If we don't get anything, leave it as false
+      if (value == null) return;
+
+      // Check whether we have the proper settings value
+      bool? userPref = prefs.getBool(Settings.enableVibration.key);
+      userPref ??= true; // if null, assume true
+
+      _enableVibration = userPref && value;
     });
+
+    initCamera();
   }
 
-  /// Increment camera index with overflow check
-  void switchCamera() {
-    // Select the next camera
-    if (currentCameraIndex != 0) {
+  @override
+  void dispose() {
+    _cameraController!.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cam = _cameraController;
+
+    // App state changed before we got the chance to initialize.
+    if (cam == null || !cam.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      cam.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      initCamera();
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /// INITS
+
+  /// Initialize the passed CameraDescription.
+  void initCamera() async {
+    final previousCameraController = _cameraController;
+    // Create a new camera controller
+    CameraController newCameraController = CameraController(
+        cameras[_currentCameraIndex],
+        ResolutionPreset.values[prefs.getInt(Settings.cameraQuality.key)!],
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg
+    );
+
+    // Set the camera to uninitialized to make sure we don't access a disposed controller.
+    if (mounted) {
       setState(() {
-        currentCameraIndex = 0;
-      });
-    } else {
-      setState(() {
-        currentCameraIndex = frontCameraIndex;
+        _cameraControllerInitialized = false;
+        _cameraController = newCameraController;
       });
     }
-    // Initialize it
-    initCamera(cameras[currentCameraIndex]);
+
+    // Dispose the controller
+    await previousCameraController?.dispose();
+
+    // Update the UI if the controller is updated
+    newCameraController.addListener(() {
+      if (mounted) setState(() {});
+    });
+
+    // TODO: Present error and go back to the home screen
+    if (_cameraController!.value.hasError) {
+      log("${_cameraController!.value.errorDescription}");
+    }
+
+    try {
+      await newCameraController.initialize();
+      flashMode = newCameraController.value.flashMode;
+    } catch (e) {
+      debugPrint("Problem initializing the camera.");
+    }
+
+    if (mounted) {
+      setState(() {
+        _cameraControllerInitialized = _cameraController!.value.isInitialized;
+      });
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /// HELPERS
+
+  /// Get permission to use the camera
+  void obtainCameraPermission() async {
+    await Permission.camera.request();
+    PermissionStatus permissionStatus = await Permission.camera.status;
+
+    if (permissionStatus.isGranted) {
+      return;
+    } else {
+      returnHome();
+    }
+  }
+
+  /// Return home
+  void returnHome() {
+    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+  }
+
+  /// Loop through all the camera indexes.
+  void incrementCamera() {
+    log("Updating the currently selected camera, current index: $_currentCameraIndex/${cameras.length}");
+    final nextIndex = (_currentCameraIndex + 1) % cameras.length;
+    _currentCameraIndex = nextIndex;
+    initCamera();
+    log("The updated camera index: $_currentCameraIndex/${cameras.length}");
   }
 
   /// Loop through the flash modes.
@@ -111,10 +176,11 @@ class CameraScreenState extends State<CameraScreen> {
     // Modulo allows for looping back to the first value
     final nextIndex = (flashMode.index + 1) % FlashMode.values.length;
     flashMode = FlashMode.values[nextIndex];
-    cameraController.setFlashMode(flashMode);
+    _cameraController!.setFlashMode(flashMode);
     log("Flash mode updated, new state: ${flashMode.name}");
   }
 
+  /// Loop through all the lifetime tags.
   void incrementLifetimeTag() {
     log("Updating the lifetime tag, current state: ${lifetimeTag.name}");
     final nextIndex = (lifetimeTag.index + 1) % LifetimeTag.values.length;
@@ -124,41 +190,55 @@ class CameraScreenState extends State<CameraScreen> {
 
   /// Set the current camera zoom
   Future<void> setCameraZoom(double zoom) async {
-    double minZoomLevel = await cameraController.getMinZoomLevel();
-    double maxZoomLevel = await cameraController.getMaxZoomLevel();
+    double minZoomLevel = await _cameraController!.getMinZoomLevel();
+    double maxZoomLevel = await _cameraController!.getMaxZoomLevel();
 
     // If the minimum zoom level is larger than the supplied zoom level,
     // zoom the camera out as much as possible.
     if (zoom < minZoomLevel) {
-      cameraController.setZoomLevel(minZoomLevel);
+      _cameraController!.setZoomLevel(minZoomLevel);
 
       // If we are within the bounds of allowed zoomed levels, just set the zoom
       // level.
     } else if (zoom < maxZoomLevel) {
-      cameraController.setZoomLevel(zoom);
+      _cameraController!.setZoomLevel(zoom);
 
       // If we exceed the maximum zoom level, set it.
     } else {
-      cameraController.setZoomLevel(maxZoomLevel);
+      _cameraController!.setZoomLevel(maxZoomLevel);
     }
   }
 
+  /// Set the focus point of the current camera.
+  setCameraFocus(TapDownDetails details, BoxConstraints constraints) {
+    final offset = Offset(
+      details.localPosition.dx / constraints.maxWidth,
+      details.localPosition.dy / constraints.maxHeight
+    );
+    _cameraController!.setFocusPoint(offset);
+    _cameraController!.setExposurePoint(offset);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /// WIDGETS
+
   Widget createCameraView() {
-    return FutureBuilder<void>(
-        future: cameraControllerFuture,
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-          // Camera is not ready, show the loading indicator
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          // Camera is ready, show the preview
-          // Camera is ready, show the screen
+    // Camera is not ready, show the loading indicator
+    if (!_cameraControllerInitialized) {
+      return Center(child: loadingIndicator(context));
+    }
+    // If the camera is ready, we can show it
+    return CameraPreview(
+      _cameraController!,
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
           return GestureDetector(
-              onScaleUpdate: (details) async {
-                setCameraZoom(details.scale);
-              },
-              child: CameraPreview(cameraController));
-        });
+            behavior: HitTestBehavior.opaque,
+            onTapDown: (details) => setCameraFocus(details, constraints)
+          );
+        },
+      ),
+    );
   }
 
   Widget createCaptureButton() {
@@ -167,17 +247,20 @@ class CameraScreenState extends State<CameraScreen> {
       color: Colors.white,
       onPressed: () async {
         try {
-          // Ensure the camera is initialized
-          await cameraControllerFuture;
+          if (_enableVibration) {
+            Vibration.vibrate(duration: 30);
+          }
+
           // Attempt to take a picture
-          final image = await cameraController.takePicture();
+          final image = await _cameraController!.takePicture();
+
           // Create memory from the image
           final memory = Memory(await image.lastModified(),
               await image.readAsBytes(), lifetimeTag);
           // Save Memory to database
           createMemory(memory);
         } catch (e) {
-          print(e);
+          log("$e");
         }
       },
       padding: const EdgeInsets.all(22),
@@ -193,9 +276,9 @@ class CameraScreenState extends State<CameraScreen> {
         TagButton(onPressed: incrementLifetimeTag),
         createCaptureButton(),
         ActionButton(
-          onPressed: switchCamera,
+          onPressed: incrementCamera,
           child: Icon(camera_helpers
-              .getCameraIcon(cameras[currentCameraIndex].lensDirection)),
+              .getCameraIcon(cameras[_currentCameraIndex].lensDirection)),
         ),
       ],
     );
@@ -242,21 +325,5 @@ class CameraScreenState extends State<CameraScreen> {
             ))
           ],
         ));
-  }
-}
-
-class _MediaSizeClipper extends CustomClipper<Rect> {
-  final Size mediaSize;
-
-  const _MediaSizeClipper(this.mediaSize);
-
-  @override
-  Rect getClip(Size size) {
-    return Rect.fromLTWH(0, 0, mediaSize.width, mediaSize.height);
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Rect> oldClipper) {
-    return true;
   }
 }

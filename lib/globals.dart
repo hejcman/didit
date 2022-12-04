@@ -1,7 +1,14 @@
 
+import 'package:camera/camera.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 ///// GLOBAL VARIABLES /////
+
+// A list of all the available cameras
+List<CameraDescription> cameras = [];
+
+// Instance of preferences
+late SharedPreferences prefs;
 
 class Globals {
   /// The name of the DB in which the memories are stored.
@@ -21,6 +28,12 @@ enum Settings {
       key: "show_onboarding",
       defaultValue: true,
       description: "Whether to show the onboarding screen on the next startup of the application."
+  ),
+
+  enableVibration(
+      key: "enable_vibration",
+      defaultValue: true,
+      description: "Whether to provide shutter feedback to the user using vibrations."
   );
 
   final String key;
