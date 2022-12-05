@@ -28,8 +28,8 @@ class CameraScreen extends StatefulWidget {
   State<CameraScreen> createState() => _CameraScreenState();
 }
 
-class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver {
-
+class _CameraScreenState extends State<CameraScreen>
+    with WidgetsBindingObserver {
   // The controller for the currently selected camera
   CameraController? _cameraController;
 
@@ -54,7 +54,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     if (cameras.isEmpty) returnHome();
 
     // Get the permission to use a camera
-    obtainCameraPermission();
+    //FIXME: doesnt work on iOS
+    //obtainCameraPermission();
 
     Vibration.hasVibrator().then((value) {
       // If we don't get anything, leave it as false
@@ -103,8 +104,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         cameras[_currentCameraIndex],
         ResolutionPreset.values[prefs.getInt(Settings.cameraQuality.key)!],
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.jpeg
-    );
+        imageFormatGroup: ImageFormatGroup.jpeg);
 
     // Set the camera to uninitialized to make sure we don't access a disposed controller.
     if (mounted) {
@@ -211,10 +211,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
   /// Set the focus point of the current camera.
   setCameraFocus(TapDownDetails details, BoxConstraints constraints) {
-    final offset = Offset(
-      details.localPosition.dx / constraints.maxWidth,
-      details.localPosition.dy / constraints.maxHeight
-    );
+    final offset = Offset(details.localPosition.dx / constraints.maxWidth,
+        details.localPosition.dy / constraints.maxHeight);
     _cameraController!.setFocusPoint(offset);
     _cameraController!.setExposurePoint(offset);
   }
@@ -233,9 +231,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTapDown: (details) => setCameraFocus(details, constraints)
-          );
+              behavior: HitTestBehavior.opaque,
+              onTapDown: (details) => setCameraFocus(details, constraints));
         },
       ),
     );
