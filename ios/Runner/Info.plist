@@ -51,5 +51,10 @@
 		<false/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>http</string>
+			<string>https</string>
+		</array>
 	</dict>
 </plist>

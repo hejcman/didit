@@ -61,6 +61,9 @@ dependencies:
   # Dependencies for sharing images
   share_plus: ^6.0.0
 
+  # Dependencies for launching url
+  url_launcher:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
