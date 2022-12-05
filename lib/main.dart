@@ -20,7 +20,7 @@ import 'storage/schema.dart';
 import 'onboarding/onboarding.dart';
 
 // Home page
-import 'home/home.dart';
+import 'home/homeScreen.dart';
 
 Future<void> main(List<String> args) async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -60,13 +60,13 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
-        darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-        initialRoute: widget.onboarding ? '/onboarding' : '/',
-        routes: {
-          '/': (context) => const HomeScreen(),
-          '/onboarding': (context) => const OnBoardingView(),
-        },
+      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+      initialRoute: widget.onboarding ? '/onboarding' : '/',
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/onboarding': (context) => const OnBoardingView(),
+      },
     );
   }
 }

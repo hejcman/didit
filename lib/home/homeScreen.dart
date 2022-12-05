@@ -18,6 +18,7 @@ import '../grid_gallery_screen/grid_gallery_screen.dart';
 import '../photo_detail/photo_detail.dart';
 
 // Settings
+import 'package:didit/home/homeScreenDrawer.dart';
 import '../settings_page/settings_page.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: const CaptureButton(),
-        drawer: SettingsDrawer(),
+        drawer: HomeScreenDrawer(),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,

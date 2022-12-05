@@ -10,14 +10,14 @@ import 'package:didit/common/platformization.dart';
 
 import 'package:didit/onboarding/onboarding.dart';
 
-class SettingsDrawer extends StatefulWidget {
-  const SettingsDrawer({super.key});
+class HomeScreenDrawer extends StatefulWidget {
+  const HomeScreenDrawer({super.key});
 
   @override
-  State<SettingsDrawer> createState() => _SettingsDrawerState();
+  State<HomeScreenDrawer> createState() => _HomeScreenDrawerState();
 }
 
-class _SettingsDrawerState extends State<SettingsDrawer> {
+class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
   final List<ResolutionPreset> resolutions = ResolutionPreset.values.toList();
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final ValueNotifier<bool> prefsUpdated = ValueNotifier(false);
