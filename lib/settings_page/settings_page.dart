@@ -48,6 +48,37 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  Future showResetDialog() {
+    return showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: const Text(
+                  "Do you want to reset all the settings to their defaults?"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () async {
+                    setDefaults(prefs, overwrite: true);
+                    // Setting the defaults shouldn't launch the onboarding
+                    prefs.setBool(Settings.showOnboarding.key, false);
+                    // Send a signal to refresh the settings page
+                    debugPrint("Resetting the settings.");
+                    prefsUpdated.value = !prefsUpdated.value;
+                    // Close the dialog
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Reset',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('Cancel'),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -65,39 +96,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               title: const Text("Settings"),
-              actions: <Widget>[
-                IconButton(
-                    icon: Icon(getDeleteIcon()),
-                    onPressed: () {
-                      showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                                title: const Text(
-                                    "Do you want to reset all the settings to their defaults?"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () async {
-                                      setDefaults(prefs, overwrite: true);
-                                      // Setting the defaults shouldn't launch the onboarding
-                                      prefs.setBool(
-                                          Settings.showOnboarding.key, false);
-                                      // Send a signal to refresh the settings page
-                                      debugPrint("Resetting the settings.");
-                                      prefsUpdated.value = !prefsUpdated.value;
-                                      // Close the dialog
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('Yes'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, 'Cancel'),
-                                    child: const Text('Cancel'),
-                                  ),
-                                ],
-                              ));
-                    })
-              ],
             ),
             body: ValueListenableBuilder(
               valueListenable: prefsUpdated,
@@ -106,42 +104,51 @@ class _SettingsPageState extends State<SettingsPage> {
                   padding: const EdgeInsets.all(10),
                   children: <Widget>[
                     Card(
-                        child: Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                            child: Row(
-                              children: <Widget>[
-                                const Expanded(child: Text("Picture quality")),
-                                DropdownButton(
-                                  value: resolutions[prefs
-                                      .getInt(Settings.cameraQuality.key)!],
-                                  items: resolutions.map<DropdownMenuItem>(
-                                      (ResolutionPreset res) {
-                                    return DropdownMenuItem(
-                                        value: res,
-                                        child: Text(resolutionToString(res)));
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    prefs.setInt(
-                                        Settings.cameraQuality.key,
-                                        ResolutionPreset.values
-                                            .toList()
-                                            .indexOf(value));
-                                    setState(() {
-                                      value = value;
-                                    });
-                                  },
-                                )
-                              ],
-                            ))),
+                        child: ListTile(
+                      leading: Icon(Icons.image),
+                      title: Text("Picture quality"),
+                      trailing: DropdownButton(
+                        value: resolutions[
+                            prefs.getInt(Settings.cameraQuality.key)!],
+                        items: resolutions
+                            .map<DropdownMenuItem>((ResolutionPreset res) {
+                          return DropdownMenuItem(
+                              value: res, child: Text(resolutionToString(res)));
+                        }).toList(),
+                        onChanged: (value) {
+                          prefs.setInt(Settings.cameraQuality.key,
+                              ResolutionPreset.values.toList().indexOf(value));
+                          setState(() {
+                            value = value;
+                          });
+                        },
+                      ),
+                    )),
                     Card(
-                        child: TextButton(
-                            onPressed: () async {
-                              await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const OnBoardingView()));
-                            },
-                            child: const Text("Re-launch the tutorial")))
+                        child: ListTile(
+                      leading: Icon(Icons.vibration),
+                      title: Text("Enable shutter vibration"),
+                      trailing: Switch(
+                          value: prefs.getBool(Settings.enableVibration.key)!,
+                          onChanged: (value) {
+                            prefs.setBool(Settings.enableVibration.key, value);
+                            setState(() {
+                              value = value;
+                            });
+                          }),
+                    )),
+                    Card(
+                      child: ListTile(
+                        leading: Icon(Icons.repeat),
+                        title: Text(
+                          "Reset to default",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        onTap: () {
+                          showResetDialog();
+                        },
+                      ),
+                    ),
                   ],
                 );
               },
