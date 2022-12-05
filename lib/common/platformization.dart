@@ -69,9 +69,17 @@ IconData getSettingsIcon() {
   }
 }
 
-Widget loadingIndicator(BuildContext context) {
+IconData getDownloadIcon() {
+  if (Platform.isIOS) {
+    return CupertinoIcons.arrow_down_to_line;
+  } else {
+    return Icons.download;
+  }
+}
 
-  Color color = context.isDarkMode ? darkColorScheme.primary : lightColorScheme.primary;
+Widget loadingIndicator(BuildContext context) {
+  Color color =
+      context.isDarkMode ? darkColorScheme.primary : lightColorScheme.primary;
 
   if (Platform.isIOS) {
     return CupertinoActivityIndicator(color: color);

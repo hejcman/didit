@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
@@ -111,6 +112,18 @@ class PhotoDetailState extends State<PhotoDetail> {
                   imgFile.delete();
                 }),
             IconButton(
+                icon: Icon(getDownloadIcon()),
+                color: Theme.of(context).colorScheme.onBackground,
+                onPressed: () async {
+                  final path = (await getExternalStorageDirectory())?.path;
+                  final imgPath = '${path}assets/${cachedMemory.created}.png';
+                  File imgFile =
+                      File('${path}assets/${cachedMemory.created}.png');
+                  imgFile.writeAsBytes(cachedMemory.pictureBytes);
+                  await GallerySaver.saveImage(imgPath, albumName: 'DidIt');
+                  imgFile.delete();
+                }),
+            IconButton(
                 icon: Icon(getDeleteIcon()),
                 color: Theme.of(context).colorScheme.onBackground,
                 onPressed: () {
@@ -128,6 +141,9 @@ class PhotoDetailState extends State<PhotoDetail> {
                             popScreenCount = 0;
                           },
                           child: const Text('Delete'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.pink,
+                          ),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, 'Cancel'),

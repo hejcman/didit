@@ -61,6 +61,9 @@ dependencies:
   # Dependencies for sharing images
   share_plus: ^6.0.0
 
+  # Dependencies for saving photos to gallery
+  gallery_saver: ^2.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
