@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -44,6 +45,12 @@ class _CameraScreenState extends State<CameraScreen>
   FlashMode flashMode = FlashMode.values[0];
   LifetimeTag lifetimeTag = LifetimeTag.values[0];
 
+  double currentScale = 1.0;
+  double baseScale = 1.0;
+  double minAvailableZoom = 1.0;
+  double maxAvailableZoom = 5.0;
+  int pointers = 0;
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /// OVERRIDES
   ///
@@ -54,8 +61,9 @@ class _CameraScreenState extends State<CameraScreen>
     if (cameras.isEmpty) returnHome();
 
     // Get the permission to use a camera
-    //FIXME: doesnt work on iOS
-    //obtainCameraPermission();
+    if (!Platform.isIOS) {
+      obtainCameraPermission();
+    }
 
     Vibration.hasVibrator().then((value) {
       // If we don't get anything, leave it as false
@@ -129,7 +137,7 @@ class _CameraScreenState extends State<CameraScreen>
 
     try {
       await newCameraController.initialize();
-      flashMode = newCameraController.value.flashMode;
+      //flashMode = newCameraController.value.flashMode;
     } catch (e) {
       debugPrint("Problem initializing the camera.");
     }
@@ -217,6 +225,22 @@ class _CameraScreenState extends State<CameraScreen>
     _cameraController!.setExposurePoint(offset);
   }
 
+  void handleScaleStart(ScaleStartDetails details) {
+    baseScale = currentScale;
+  }
+
+  Future<void> handleScaleUpdate(ScaleUpdateDetails details) async {
+    // When there are not exactly two fingers on screen don't scale
+    if (pointers != 2) {
+      return;
+    }
+
+    currentScale =
+        (baseScale * details.scale).clamp(minAvailableZoom, maxAvailableZoom);
+
+    await _cameraController!.setZoomLevel(currentScale);
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /// WIDGETS
 
@@ -226,14 +250,20 @@ class _CameraScreenState extends State<CameraScreen>
       return Center(child: loadingIndicator(context));
     }
     // If the camera is ready, we can show it
-    return CameraPreview(
-      _cameraController!,
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: (details) => setCameraFocus(details, constraints));
-        },
+    return Listener(
+      onPointerDown: (_) => pointers++,
+      onPointerUp: (_) => pointers--,
+      child: CameraPreview(
+        _cameraController!,
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onScaleStart: handleScaleStart,
+                onScaleUpdate: handleScaleUpdate,
+                onTapDown: (details) => setCameraFocus(details, constraints));
+          },
+        ),
       ),
     );
   }
