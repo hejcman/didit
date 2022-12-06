@@ -108,24 +108,30 @@ class PhotoDetailState extends State<PhotoDetail> {
         onPressed: () async {
           Directory? directory;
           if (Platform.isIOS) {
-            if (await _requestPermission(Permission.photos)) {
-              directory = await getTemporaryDirectory();
-            }
+            if (await _requestPermission(Permission.photos)) {}
+            final shareResult = await Share.shareXFiles([
+              XFile.fromData(
+                cachedMemory.pictureBytes,
+                name: 'flutter_logo.png',
+                mimeType: 'image/png',
+              ),
+            ]);
           } else if (Platform.isAndroid) {
             directory = (await getExternalStorageDirectory());
-          }
-          if (directory == null) {
-            return;
-          }
-          if (!await directory.exists()) {
-            await directory.create(recursive: true);
-          }
+            if (directory == null) {
+              return;
+            }
+            if (!await directory.exists()) {
+              await directory.create(recursive: true);
+            }
 
-          File imgFile = File('${directory.path}assets/screenshot.png');
-          imgFile.writeAsBytes(cachedMemory.pictureBytes);
+            File imgFile = File('${directory.path}assets/screenshot.png');
+            imgFile.writeAsBytes(cachedMemory.pictureBytes);
 
-          await Share.shareXFiles([XFile('${directory}assets/screenshot.png')]);
-          imgFile.delete();
+            await Share.shareXFiles(
+                [XFile('${directory}assets/screenshot.png')]);
+            imgFile.delete();
+          }
         });
   }
 
