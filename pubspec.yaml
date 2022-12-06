@@ -63,6 +63,9 @@ dependencies:
 
   # Dependencies for launching url
   url_launcher:
+  # Dependencies for saving photos to gallery
+  gallery_saver: ^2.3.2
+  image_gallery_saver: '^1.7.1'
 
 dev_dependencies:
   flutter_test:
