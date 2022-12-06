@@ -277,7 +277,6 @@ class _CameraScreenState extends State<CameraScreen>
           if (_enableVibration) {
             Vibration.vibrate(duration: 30);
           }
-
           // Attempt to take a picture
           final image = await _cameraController!.takePicture();
 
@@ -286,6 +285,7 @@ class _CameraScreenState extends State<CameraScreen>
               await image.readAsBytes(), lifetimeTag);
           // Save Memory to database
           createMemory(memory);
+          await File(image.path).delete();
         } catch (e) {
           log("$e");
         }
