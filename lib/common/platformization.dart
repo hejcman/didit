@@ -69,6 +69,30 @@ IconData getSettingsIcon() {
   }
 }
 
+IconData getCheckIcon() {
+    return Platform.isIOS ? CupertinoIcons.check_mark : Icons.check;
+}
+
+IconData getPlusIcon() {
+  return Platform.isIOS ? CupertinoIcons.add : Icons.add;
+}
+
+IconData getListIcon() {
+  return Platform.isIOS ? CupertinoIcons.list_number : Icons.format_list_numbered;
+}
+
+IconData getMinusIcon() {
+  return Platform.isIOS ? CupertinoIcons.minus_circle : Icons.remove_circle_outline;
+}
+
+IconData getSaveIcon() {
+  return Platform.isIOS ? CupertinoIcons.floppy_disk : Icons.save;
+}
+
+IconData getReloadIcon() {
+  return Platform.isIOS ? CupertinoIcons.arrow_2_circlepath : Icons.repeat;
+}
+
 Widget loadingIndicator(BuildContext context) {
 
   Color color = context.isDarkMode ? darkColorScheme.primary : lightColorScheme.primary;

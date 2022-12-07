@@ -13,6 +13,8 @@ late SharedPreferences prefs;
 class Globals {
   /// The name of the DB in which the memories are stored.
   static const String dbName = "memories";
+  // The name of the DB in which check-lists are stored.
+  static const String checkListsDbName = "check_lists";
 }
 
 ///// SETTINGS /////

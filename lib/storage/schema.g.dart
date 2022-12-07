@@ -46,6 +46,83 @@ class MemoryAdapter extends TypeAdapter<Memory> {
           typeId == other.typeId;
 }
 
+class CheckListItemAdapter extends TypeAdapter<CheckListItem> {
+  @override
+  final int typeId = 2;
+
+  @override
+  CheckListItem read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return CheckListItem(
+      fields[0] as int,
+      fields[1] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, CheckListItem obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.index)
+      ..writeByte(1)
+      ..write(obj.title);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CheckListItemAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class CheckListAdapter extends TypeAdapter<CheckList> {
+  @override
+  final int typeId = 3;
+
+  @override
+  CheckList read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return CheckList(
+      fields[0] as String,
+      fields[1] as DateTime,
+      (fields[2] as List).cast<CheckListItem>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, CheckList obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.title)
+      ..writeByte(1)
+      ..write(obj.created)
+      ..writeByte(2)
+      ..write(obj.items);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CheckListAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class LifetimeTagAdapter extends TypeAdapter<LifetimeTag> {
   @override
   final int typeId = 0;

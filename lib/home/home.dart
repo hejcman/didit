@@ -20,6 +20,9 @@ import '../photo_detail/photo_detail.dart';
 // Settings
 import '../settings_page/settings_page.dart';
 
+// Task list overview
+import '../check_list/check_list_overview_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -31,7 +34,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: const CaptureButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+          child: Row(
+            children: const <Widget>[
+              CheckListsButton(),
+              Spacer(),
+              CaptureButton(),
+            ]
+          ),
+        ),
         drawer: SettingsDrawer(),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -83,9 +96,28 @@ class CaptureButton extends StatelessWidget {
       },
       label: const Text('Capture'),
       icon: Icon(getCameraIcon()),
+      heroTag: "capture_action_button",
     );
   }
 }
+
+class CheckListsButton extends StatelessWidget {
+  const CheckListsButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.extended(
+      onPressed: () async {
+        await Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const CheckListOverviewScreen()));
+      },
+      label: const Text('Check lists'),
+      icon: Icon(getListIcon()),
+      heroTag: "check_lists_action_button",
+    );
+  }
+}
+
 
 class OneCategory extends StatelessWidget {
   final LifetimeTag tag;

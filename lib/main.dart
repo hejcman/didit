@@ -35,6 +35,7 @@ Future<void> main(List<String> args) async {
   await Hive.initFlutter();
   generateAdapters();
   Hive.openBox<Memory>(Globals.dbName);
+  Hive.openBox<CheckList>(Globals.checkListsDbName);
 
   // Prepare the default settings
   prefs = await SharedPreferences.getInstance();

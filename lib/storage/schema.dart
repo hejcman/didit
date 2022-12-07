@@ -132,8 +132,51 @@ class Memory extends HiveObject {
   }
 }
 
+// Hive object for check list item
+@HiveType(typeId: 2)
+class CheckListItem extends HiveObject {
+  @HiveField(0)
+  int index;
+
+  // Storing title of the check list item
+  @HiveField(1)
+  String title;
+
+  /// Storing the memory hive object reference.
+  /*@HiveField(2)
+  Memory memory;*/
+
+  /// Constructor
+  CheckListItem(
+      this.index,
+      this.title,
+      // this.memory
+    );
+}
+
+// Hive object for CheckList
+@HiveType(typeId: 3)
+class CheckList extends HiveObject {
+  // Storing check list title
+  @HiveField(0)
+  String title;
+
+  /// The time the check list was created. This should not change once created.
+  @HiveField(1)
+  DateTime created;
+
+  /// Storing the image blob in the database.
+  @HiveField(2)
+  List<CheckListItem> items;
+
+  /// Constructor
+  CheckList(this.title, this.created, this.items);
+}
+
 /// Generate adapters to convert Dart classes to ones stored in the Hive DB.
 void generateAdapters() {
   Hive.registerAdapter<LifetimeTag>(LifetimeTagAdapter());
   Hive.registerAdapter<Memory>(MemoryAdapter());
+  Hive.registerAdapter<CheckListItem>(CheckListItemAdapter());
+  Hive.registerAdapter<CheckList>(CheckListAdapter());
 }

@@ -54,3 +54,39 @@ List<Memory> getMemories(LifetimeTag lifetimeTag) {
       .where((memory) => memory.lifetimeTag == lifetimeTag)
       .toList(growable: false);
 }
+
+/// Get a check-list database instance that you can then operate with.
+Box<CheckList> getCheckListsBox() {
+  return Hive.box<CheckList>(Globals.checkListsDbName);
+}
+
+/// Add the memory object to the database.
+void createCheckList(CheckList checkList) {
+  var box = getCheckListsBox();
+  box.add(checkList);
+  box.flush();
+}
+
+/// Delete the memory object from the database.
+void deleteCheckList(CheckList checkList) {
+  var box = getCheckListsBox();
+  box.delete(checkList.key);
+  box.flush();
+}
+
+/// Get memories based on their lifetime tag.
+List<CheckList> getCheckLists() {
+  var box = getCheckListsBox();
+
+  // If there are no memories, return empty list
+  if (box.isEmpty) {
+    return <CheckList>[];
+  }
+
+  // Otherwise, get all the relevant memories
+  return box.values
+      //.where((memory) => memory.lifetimeTag == lifetimeTag)
+      .toList(growable: false);
+}
+
+// CheckList getCheckListByTitle()
