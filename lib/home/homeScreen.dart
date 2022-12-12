@@ -1,4 +1,5 @@
-import 'package:didit/common/color_schemes.g.dart';
+import 'dart:io';
+
 import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -19,7 +20,6 @@ import '../photo_detail/photo_detail.dart';
 
 // Settings
 import 'package:didit/home/homeScreenDrawer.dart';
-import '../settings_page/settings_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: const CaptureButton(),
-        drawer: HomeScreenDrawer(),
+        drawer: const HomeScreenDrawer(),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
@@ -59,7 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(20),
                       itemCount: categories.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final memories = getMemories(categories[index]);
+
+                        final List<Memory> memories;
+                        if (Platform.isIOS) {
+                          memories = getMemories(categories[index], reversed: false);
+                        } else {
+                          memories = getMemories(categories[index]);
+                        }
                         return OneCategory(
                           tag: categories[index],
                           memories: memories,
@@ -141,13 +147,13 @@ class OneCategory extends StatelessWidget {
 }
 
 class CustomPhotoTile extends StatelessWidget {
-  CustomPhotoTile(
+  const CustomPhotoTile(
       {super.key,
       required this.memory,
       required this.memories,
       required this.index});
 
-  Memory memory;
+  final Memory memory;
   final List<Memory> memories;
   final int index;
 

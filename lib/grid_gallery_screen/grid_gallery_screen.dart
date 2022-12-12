@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -40,7 +42,12 @@ class _GridGalleryScreenState extends State<GridGalleryScreen> {
       body: ValueListenableBuilder(
           valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
           builder: (BuildContext context, Box<Memory> box, _) {
-            final List<Memory> memories = getMemories(widget.tag);
+            final List<Memory> memories;
+            if (Platform.isIOS) {
+              memories = getMemories(widget.tag, reversed: false);
+            } else {
+              memories = getMemories(widget.tag);
+            }
 
             if (box.isEmpty || memories.isEmpty) {
               return const Center(child: Text("No images to show."));
