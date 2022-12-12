@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 //app imports
-import 'package:didit/globals.dart';
 import 'package:didit/common/platformization.dart';
 
 import 'package:didit/onboarding/onboarding.dart';
@@ -66,26 +65,26 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
                     padding: const EdgeInsets.all(10),
                     children: <Widget>[
                       ListTile(
-                        leading: Icon(Icons.settings),
-                        title: Text('Settings'),
+                        leading: Icon(getSettingsIcon()),
+                        title: const Text('Settings'),
                         onTap: () async {
                           await Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => const SettingsPage()));
                         },
                       ),
                       ListTile(
-                        leading: Icon(Icons.favorite),
-                        title: Text('Send feedback'),
+                        leading: Icon(getFeedbackIcon()),
+                        title: const Text('Send feedback'),
                         onTap: _launchEmail,
                       ),
                       ListTile(
-                        leading: Icon(Icons.coffee),
-                        title: Text('Buy me a coffee'),
+                        leading: Icon(getFavouriteIcon()),
+                        title: const Text('Buy us a coffee'),
                         onTap: _launchBuyMeACoffeeUrl,
                       ),
                       ListTile(
-                        leading: Icon(Icons.list_alt),
-                        title: Text('Relaunch tutorial'),
+                        leading: Icon(getListIcon()),
+                        title: const Text('Relaunch tutorial'),
                         onTap: () async {
                           await Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => const OnBoardingView()));
@@ -101,17 +100,17 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
   }
 
   Future<void> _launchEmail() async {
-    final String _emailAdress = "support@didit.com";
-    final String _subject = "DidIt - feedback";
-    final _url = Uri.parse('mailto:${_emailAdress}?subject=${_subject}');
-    if (!await launchUrl(_url)) {
+    const String emailAddress = "support@didit.com";
+    const String subject = "DidIt - feedback";
+    final url = Uri.parse('mailto:$emailAddress?subject=$subject');
+    if (!await launchUrl(url)) {
       throw 'Could not launch email';
     }
   }
 
   Future<void> _launchBuyMeACoffeeUrl() async {
-    Uri _url = Uri.parse('https://www.buymeacoffee.com/arthurnacar');
-    if (!await launchUrl(_url)) {
+    Uri url = Uri.parse('https://www.buymeacoffee.com/arthurnacar');
+    if (!await launchUrl(url)) {
       throw 'Could not launch https://www.buymeacoffee.com/arthurnacar';
     }
   }

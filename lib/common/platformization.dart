@@ -77,6 +77,30 @@ IconData getDownloadIcon() {
   }
 }
 
+IconData getFeedbackIcon() {
+  if (Platform.isIOS) {
+    return CupertinoIcons.text_bubble_fill;
+  } else {
+    return Icons.chat_bubble;
+  }
+}
+
+IconData getFavouriteIcon() {
+  if (Platform.isIOS) {
+    return CupertinoIcons.heart_fill;
+  } else {
+    return Icons.favorite;
+  }
+}
+
+IconData getListIcon() {
+  if (Platform.isIOS) {
+    return CupertinoIcons.square_list;
+  } else {
+    return Icons.list_alt;
+  }
+}
+
 Widget loadingIndicator(BuildContext context) {
   Color color =
       context.isDarkMode ? darkColorScheme.primary : lightColorScheme.primary;

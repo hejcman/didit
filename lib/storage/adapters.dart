@@ -41,7 +41,9 @@ void deleteOutdatedMemories() {
 }
 
 /// Get memories based on their lifetime tag.
-List<Memory> getMemories(LifetimeTag lifetimeTag) {
+///
+/// The returned list is reversed if the platform is not iOS, as Android galleries usually
+List<Memory> getMemories(LifetimeTag lifetimeTag, {bool reversed = true}) {
   var box = getMemoryBox();
 
   // If there are no memories, return empty list
@@ -50,7 +52,13 @@ List<Memory> getMemories(LifetimeTag lifetimeTag) {
   }
 
   // Otherwise, get all the relevant memories
-  return box.values
+  List<Memory> values = box.values
       .where((memory) => memory.lifetimeTag == lifetimeTag)
       .toList(growable: false);
+
+  if (reversed) {
+    return values;
+  } else {
+    return List<Memory>.from(values.reversed);
+  }
 }
