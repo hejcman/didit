@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // Globals
-import '../globals.dart';
+import '../globals.dart' as globals;
 
 // Camera
 import '../camera/camera.dart';
@@ -40,16 +40,11 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Image.asset("assets/logo/didit_logo_light.png", height: 35),
         ),
         body: SafeArea(
-            child: FutureBuilder(
-          future: Hive.openBox<Memory>(Globals.dbName),
-          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const CircularProgressIndicator();
-            }
-            return ValueListenableBuilder(
-                valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
+            child: ValueListenableBuilder(
+                valueListenable: globals.box.listenable(),
                 builder: (BuildContext context, Box<Memory> box, _) {
-                  if (box.isEmpty) {
+                  final isForeground = TickerMode.of(context);
+                  if (!isForeground || box.isEmpty) {
                     return const Center(child: Text("No images to show."));
                   }
 
@@ -59,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(20),
                       itemCount: categories.length,
                       itemBuilder: (BuildContext context, int index) {
-
                         final List<Memory> memories;
                         if (Platform.isIOS) {
                           memories = getMemories(categories[index], reversed: false);
@@ -72,9 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           box: box,
                         );
                       });
-                });
-          },
-        )));
+                })));
   }
 }
 
@@ -85,8 +77,7 @@ class CaptureButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: () async {
-        await Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const CameraScreen()));
+        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CameraScreen()));
       },
       label: const Text('Capture'),
       icon: Icon(getCameraIcon()),
@@ -99,11 +90,7 @@ class OneCategory extends StatelessWidget {
   final List<Memory> memories;
   final Box<Memory> box;
 
-  OneCategory(
-      {super.key,
-      required this.tag,
-      required this.memories,
-      required this.box});
+  OneCategory({super.key, required this.tag, required this.memories, required this.box});
 
   @override
   Widget build(BuildContext context) {
@@ -134,12 +121,10 @@ class OneCategory extends StatelessWidget {
         child: GridView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: memories!.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
             itemBuilder: (BuildContext context, index) {
               Memory memory = memories![index];
-              return CustomPhotoTile(
-                  memory: memory, memories: memories, index: index);
+              return CustomPhotoTile(memory: memory, memories: memories, index: index);
             }),
       )
     ]);
@@ -147,11 +132,7 @@ class OneCategory extends StatelessWidget {
 }
 
 class CustomPhotoTile extends StatelessWidget {
-  const CustomPhotoTile(
-      {super.key,
-      required this.memory,
-      required this.memories,
-      required this.index});
+  const CustomPhotoTile({super.key, required this.memory, required this.memories, required this.index});
 
   final Memory memory;
   final List<Memory> memories;
@@ -162,8 +143,7 @@ class CustomPhotoTile extends StatelessWidget {
     return GestureDetector(
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => PhotoDetail(
-                  index: index, memories: [for (final m in memories) m.key])));
+              builder: (context) => PhotoDetail(index: index, memories: [for (final m in memories) m.key])));
         },
         child: Container(
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),

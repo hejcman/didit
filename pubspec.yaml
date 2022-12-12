@@ -44,6 +44,7 @@ dependencies:
   # Dependencies for the HiveDB
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  flutter_secure_storage: ^7.0.1
 
   # Dependencies for camera work
   camera: ^0.10.0+4
@@ -63,6 +64,7 @@ dependencies:
 
   # Dependencies for launching url
   url_launcher:
+
   # Dependencies for saving photos to gallery
   gallery_saver: ^2.3.2
   image_gallery_saver: '^1.7.1'

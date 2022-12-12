@@ -1,60 +1,58 @@
-import 'package:hive/hive.dart';
+import 'dart:developer';
 
-import '../globals.dart';
+import '../globals.dart' as globals;
 import 'schema.dart';
-
-/// Get a database instance that you can then operate with.
-Box<Memory> getMemoryBox() {
-  return Hive.box<Memory>(Globals.dbName);
-}
 
 /// Add the memory object to the database.
 void createMemory(Memory memory) {
-  var box = getMemoryBox();
-  box.add(memory);
-  box.flush();
+  log("Creating a new memory.");
+  globals.box.add(memory);
+  globals.box.flush();
 }
 
 /// Update the tag of a memory -
 /// delete the memory object from the database and create new one with new tag
 void updateMemory(Memory memory) {
-  var box = getMemoryBox();
-  box.put(memory.key, memory);
-  box.flush();
+  log("Updating an existing memory with key ${memory.key}.");
+  globals.box.put(memory.key, memory);
+  globals.box.flush();
 }
 
 /// Delete the memory object from the database.
 void deleteMemory(Memory memory) {
-  var box = getMemoryBox();
-  box.delete(memory.key);
-  box.flush();
+  log("Deleting a memory with key ${memory.key}.");
+  globals.box.delete(memory.key);
+  globals.box.flush();
 }
 
 /// Delete any memories which are outdated
 void deleteOutdatedMemories() {
-  var box = getMemoryBox();
-  var outdatedMemories = box.values.where((memory) => memory.isExpired());
+  log("Deleting all outdated memories.");
+  var outdatedMemories = globals.box.values.where((memory) => memory.isExpired());
+  log("Found ${outdatedMemories.length} outdated memories.");
   for (Memory memory in outdatedMemories) {
     deleteMemory(memory);
   }
-  box.flush();
+  globals.box.flush();
 }
 
 /// Get memories based on their lifetime tag.
 ///
 /// The returned list is reversed if the platform is not iOS, as Android galleries usually
 List<Memory> getMemories(LifetimeTag lifetimeTag, {bool reversed = true}) {
-  var box = getMemoryBox();
+  log("Getting all memories with tag $lifetimeTag.");
 
   // If there are no memories, return empty list
-  if (box.isEmpty) {
+  if (globals.box.isEmpty) {
     return <Memory>[];
   }
 
   // Otherwise, get all the relevant memories
-  List<Memory> values = box.values
+  List<Memory> values = globals.box.values
       .where((memory) => memory.lifetimeTag == lifetimeTag)
       .toList(growable: false);
+
+  log("Found ${values.length} memories with the given lifetimeTag.");
 
   if (reversed) {
     return values;
