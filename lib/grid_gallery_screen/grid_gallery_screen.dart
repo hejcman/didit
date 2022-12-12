@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // Globals
-import '../globals.dart';
+import '../globals.dart' as globals;
 
 // Storage
 import '../storage/adapters.dart';
@@ -40,7 +40,7 @@ class _GridGalleryScreenState extends State<GridGalleryScreen> {
             .iconWidget(textColor: Theme.of(context).colorScheme.onBackground),
       ),
       body: ValueListenableBuilder(
-          valueListenable: Hive.box<Memory>(Globals.dbName).listenable(),
+          valueListenable: globals.box.listenable(),
           builder: (BuildContext context, Box<Memory> box, _) {
             final List<Memory> memories;
             if (Platform.isIOS) {

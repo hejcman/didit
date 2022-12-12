@@ -1,14 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 // Settings
-import 'globals.dart';
+import 'globals.dart' as globals;
 
 // Design
 import 'common/color_schemes.g.dart';
@@ -34,17 +36,25 @@ Future<void> main(List<String> args) async {
   // Prepare the DB
   await Hive.initFlutter();
   generateAdapters();
-  Hive.openBox<Memory>(Globals.dbName);
+  const secureStorage = FlutterSecureStorage();
+  var keyExists = await secureStorage.read(key: 'hiveKey');
+  if (keyExists == null) {
+    final newKey = Hive.generateSecureKey();
+    await secureStorage.write(key: 'hiveKey', value: base64UrlEncode(newKey));
+  }
+  final key = await secureStorage.read(key: 'hiveKey');
+  final encryptionKey = base64Url.decode(key!);
+  globals.box = await Hive.openBox<Memory>(globals.dbName, encryptionCipher: HiveAesCipher(encryptionKey));
 
   // Prepare the default settings
-  prefs = await SharedPreferences.getInstance();
-  setDefaults(prefs, overwrite: false);
+  globals.prefs = await SharedPreferences.getInstance();
+  globals.setDefaults(globals.prefs, overwrite: false);
 
-  cameras = await availableCameras();
+  globals.cameras = await availableCameras();
 
   // Launch the app
   FlutterNativeSplash.remove();
-  runApp(MyApp(onboarding: prefs.getBool(Settings.showOnboarding.key)!));
+  runApp(MyApp(onboarding: globals.prefs.getBool(globals.Settings.showOnboarding.key)!));
 }
 
 class MyApp extends StatefulWidget {

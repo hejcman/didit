@@ -1,19 +1,23 @@
 
 import 'package:camera/camera.dart';
+import 'package:didit/storage/schema.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 ///// GLOBAL VARIABLES /////
 
-// A list of all the available cameras
+/// A list of all the available cameras
 List<CameraDescription> cameras = [];
 
-// Instance of preferences
+/// Instance of preferences
 late SharedPreferences prefs;
 
-class Globals {
-  /// The name of the DB in which the memories are stored.
-  static const String dbName = "memories";
-}
+/// The name of the shared memory Box.
+const String dbName = "memories";
+
+/// The instance of the shared memory Box.
+late Box<Memory> box;
+
 
 ///// SETTINGS /////
 

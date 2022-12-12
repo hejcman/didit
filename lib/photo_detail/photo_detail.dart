@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -16,6 +14,9 @@ import 'package:toggle_switch/toggle_switch.dart';
 // Storage
 import '../storage/adapters.dart';
 import '../storage/schema.dart';
+
+// Globals
+import '../globals.dart' as globals;
 
 class PhotoDetail extends StatefulWidget {
   final List<dynamic> memories;
@@ -36,7 +37,7 @@ class PhotoDetailState extends State<PhotoDetail> {
   late int curIndex;
   late ValueNotifier<String> timeToExpire;
   late Memory cachedMemory;
-  late Box<Memory> memoryBox;
+  // late Box<Memory> memoryBox;
 
   PhotoDetailState();
 
@@ -46,7 +47,7 @@ class PhotoDetailState extends State<PhotoDetail> {
   @override
   void initState() {
     super.initState();
-    memoryBox = getMemoryBox();
+    // memoryBox = getMemoryBox();
     curIndex = widget.index;
     updateMemoryCache();
     timeToExpire = ValueNotifier(cachedMemory.getTimeToExpire());
@@ -54,7 +55,7 @@ class PhotoDetailState extends State<PhotoDetail> {
 
   /// Update the cached memory.
   Memory updateMemoryCache() {
-    cachedMemory = memoryBox.get(widget.memories[curIndex])!;
+    cachedMemory = globals.box.get(widget.memories[curIndex])!;
     return cachedMemory;
   }
 
@@ -161,10 +162,10 @@ class PhotoDetailState extends State<PhotoDetail> {
                         .popUntil((_) => popScreenCount++ >= 2);
                     popScreenCount = 0;
                   },
-                  child: const Text('Delete'),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.pink,
                   ),
+                  child: const Text('Delete'),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -244,7 +245,7 @@ class PhotoDetailState extends State<PhotoDetail> {
                   height: 30.0,
                   child: CircularProgressIndicator(
                     value: event != null
-                        ? event.cumulativeBytesLoaded / memoryBox.length
+                        ? event.cumulativeBytesLoaded / globals.box.length
                         : 0,
                   ),
                 ),
