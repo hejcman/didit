@@ -15,13 +15,23 @@ class CheckListCreateScreen extends StatefulWidget {
 }
 
 class _CheckListCreateScreenState extends State<CheckListCreateScreen> {
-  final nameInputController = TextEditingController();
+  final _nameInputController = TextEditingController();
+  bool _nameInputDisplayError = false;
+
   List<String> items = [];
+  bool _itemsEmptyDisplayError = false;
   String checkListName = "";
 
   void _addItemToItemsList(String item) {
+    if (item == "") {
+      return;
+    }
+
     setState(() {
       items.add(item);
+      if (items.isNotEmpty && _itemsEmptyDisplayError) {
+        _itemsEmptyDisplayError = false;
+      }
     });
   }
 
@@ -38,6 +48,22 @@ class _CheckListCreateScreenState extends State<CheckListCreateScreen> {
   }
 
   void _saveCheckList() {
+    if (checkListName == "") {
+      if (!_nameInputDisplayError) {
+        setState(() {
+          _nameInputDisplayError = true;
+        });
+      }
+      return;
+    }
+
+    if (items.isEmpty) {
+      if (!_itemsEmptyDisplayError) {
+        _itemsEmptyDisplayError = true;
+      }
+      return;
+    }
+
     // Create memory from the image
     final CheckList checkList = CheckList(
       checkListName,
@@ -54,17 +80,13 @@ class _CheckListCreateScreenState extends State<CheckListCreateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme
-          .of(context)
-          .colorScheme
-          .background,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
           "Create check list",
           style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: Colors.deepPurple[400]
+              color: Theme.of(context).colorScheme.onBackground
           ),
         ),
         leading: IconButton(
@@ -83,9 +105,6 @@ class _CheckListCreateScreenState extends State<CheckListCreateScreen> {
           ),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: checkListName.isNotEmpty ?
-        CheckListCreateForm(addItem: _addItemToItemsList, removeItem: _removeItemAtIndex) : null,
       body: SafeArea(
           child: Column(
             children: <Widget>[
@@ -94,16 +113,24 @@ class _CheckListCreateScreenState extends State<CheckListCreateScreen> {
                 child: Column(
                   children: [
                     TextField(
-                      controller: nameInputController,
+                      controller: _nameInputController,
                       onChanged: (newVal) {
                         setState(() {
                           checkListName = newVal;
+                          if (newVal == "") {
+                            _nameInputDisplayError = true;
+                          } else {
+                            if (_nameInputDisplayError) {
+                              _nameInputDisplayError = false;
+                            }
+                          }
                         });
                       },
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
                         hintText: 'Enter a title for task list',
-                        label: Text("Check list title")
+                        label: const Text("Check list title"),
+                        errorText: _nameInputDisplayError ? 'Title can\'t be empty' : null,
                       ),
                     ),
                   ],
@@ -111,6 +138,8 @@ class _CheckListCreateScreenState extends State<CheckListCreateScreen> {
               ),
               Expanded(
                 child: items.isNotEmpty ? ReorderableListView.builder(
+                  shrinkWrap: true,
+                  anchor: 0,
                   onReorder: (int oldIndex, int newIndex) {
                     setState(() {
                       if (oldIndex < newIndex) {
@@ -152,6 +181,12 @@ class _CheckListCreateScreenState extends State<CheckListCreateScreen> {
                   ),
                 ),
               ),
+              CheckListCreateForm(
+                  addItem: _addItemToItemsList,
+                  removeItem: _removeItemAtIndex,
+                  titleEmpty: checkListName.isEmpty,
+                  itemsEmpty: _itemsEmptyDisplayError,
+              ),
             ],
           )
       ),
@@ -162,8 +197,18 @@ class _CheckListCreateScreenState extends State<CheckListCreateScreen> {
 class CheckListCreateForm extends StatefulWidget {
   final ValueChanged<String> addItem;
   final ValueChanged<int> removeItem;
+  final bool titleEmpty;
+  final bool itemsEmpty;
 
-  const CheckListCreateForm({Key? key, required this.addItem, required this.removeItem}) : super(key: key);
+  const CheckListCreateForm(
+      {
+        Key? key,
+        required this.addItem,
+        required this.removeItem,
+        this.titleEmpty = false,
+        this.itemsEmpty = false
+      }
+      ) : super(key: key);
 
   @override
   State<CheckListCreateForm> createState() => _CheckListCreateFormState();
@@ -189,10 +234,12 @@ class _CheckListCreateFormState extends State<CheckListCreateForm> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: TextField(
+                enabled: !widget.titleEmpty,
                 controller: inputController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
                   hintText: 'Enter a task name or description',
+                  errorText: widget.itemsEmpty ? "Add at least 1 task to your list" : null
                 ),
               ),
             ),

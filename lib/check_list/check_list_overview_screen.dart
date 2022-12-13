@@ -33,17 +33,13 @@ class _CheckListOverviewScreenState extends State<CheckListOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme
-          .of(context)
-          .colorScheme
-          .background,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
           "Check lists",
           style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: Colors.deepPurple[400]
+              color: Theme.of(context).colorScheme.onBackground
           ),
         ),
         leading: IconButton(
@@ -102,8 +98,7 @@ class CheckListTab extends StatefulWidget {
   /*final int index;
   final String title;
   final dynamic dbKey;
-  final int steps;
-  final int stepsDone;*/
+  final int steps;*/
   final CheckList checkList;
   final VoidCallback? onCheckListDeleted;
 
@@ -125,15 +120,16 @@ class CheckListTab extends StatefulWidget {
 }
 
 class _CheckListState extends State<CheckListTab> {
+  int stepsDone = 0;
+
   String getTrailingText() {
-    /*if (widget.stepsDone == 0) {
+    if (stepsDone == 0) {
       return "Begin check";
-    } else if (widget.stepsDone == widget.steps) {
+    } else if (stepsDone == widget.checkList.items.length) {
       return "Done";
     } else {
-      return "${widget.stepsDone}/${widget.steps}";
-    }*/
-    return "0/${widget.checkList.items.length}";
+      return "$stepsDone/${widget.checkList.items.length}";
+    }
   }
 
   @override

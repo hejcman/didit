@@ -33,17 +33,13 @@ class _CheckListCaptureScreenState extends State<CheckListCaptureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme
-        .of(context)
-        .colorScheme
-        .background,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
           checkList!.title,
           style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: Colors.deepPurple[400]
+              color: Theme.of(context).colorScheme.onBackground
           ),
         ),
         leading: IconButton(
