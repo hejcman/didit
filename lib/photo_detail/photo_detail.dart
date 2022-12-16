@@ -49,14 +49,14 @@ class PhotoDetailState extends State<PhotoDetail> {
     super.initState();
     // memoryBox = getMemoryBox();
     curIndex = widget.index;
+    timeToExpire = ValueNotifier("Unknown");
     updateMemoryCache();
-    timeToExpire = ValueNotifier(cachedMemory.getTimeToExpire());
   }
 
   /// Update the cached memory.
-  Memory updateMemoryCache() {
+  void updateMemoryCache() {
     cachedMemory = globals.box.get(widget.memories[curIndex])!;
-    return cachedMemory;
+    timeToExpire.value = cachedMemory.getTimeToExpire();
   }
 
   Future<bool> _requestPermission(Permission permission) async {
