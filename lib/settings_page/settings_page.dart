@@ -102,10 +102,10 @@ class _SettingsPageState extends State<SettingsPage> {
               builder: (BuildContext context, bool value, Widget? child) {
                 return ListView(
                   padding: const EdgeInsets.all(10),
-                  children: <Widget>[
+                  children: [
                     Card(
                         child: ListTile(
-                      leading: Icon(Icons.image),
+                      leading: Icon(getImageIcon()),
                       title: Text("Picture quality"),
                       trailing: DropdownButton(
                         value: resolutions[
@@ -126,7 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     )),
                     Card(
                         child: ListTile(
-                      leading: Icon(Icons.vibration),
+                      leading: Icon(getVibrationIcon()),
                       title: Text("Enable shutter vibration"),
                       trailing: Switch(
                           value: prefs.getBool(Settings.enableVibration.key)!,
@@ -139,7 +139,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     )),
                     Card(
                       child: ListTile(
-                        leading: Icon(Icons.repeat),
+                        leading: Icon(getRepeatIcon()),
                         title: Text(
                           "Reset to default",
                           style: TextStyle(color: Colors.red),

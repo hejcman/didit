@@ -101,6 +101,30 @@ IconData getListIcon() {
   }
 }
 
+IconData getImageIcon() {
+  if (Platform.isIOS) {
+    return CupertinoIcons.camera_on_rectangle;
+  } else {
+    return Icons.image;
+  }
+}
+
+IconData getVibrationIcon() {
+  if (Platform.isIOS) {
+    return CupertinoIcons.waveform;
+  } else {
+    return Icons.vibration;
+  }
+}
+
+IconData getRepeatIcon() {
+  if (Platform.isIOS) {
+    return CupertinoIcons.repeat;
+  } else {
+    return Icons.repeat;
+  }
+}
+
 Widget loadingIndicator(BuildContext context) {
   Color color =
       context.isDarkMode ? darkColorScheme.primary : lightColorScheme.primary;
