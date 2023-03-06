@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,6 +14,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 // Storage
+import '../globals.dart';
 import '../storage/adapters.dart';
 import '../storage/schema.dart';
 
@@ -107,31 +110,26 @@ class PhotoDetailState extends State<PhotoDetail> {
         icon: Icon(getShareIcon()),
         color: Theme.of(context).colorScheme.onBackground,
         onPressed: () async {
-          Directory? directory;
-          if (Platform.isIOS) {
-            if (await _requestPermission(Permission.photos)) {}
-            final shareResult = await Share.shareXFiles([
-              XFile.fromData(
-                cachedMemory.pictureBytes,
-                name: 'flutter_logo.png',
-                mimeType: 'image/png',
-              ),
-            ]);
-          } else if (Platform.isAndroid) {
-            directory = (await getExternalStorageDirectory());
-            if (directory == null) {
-              return;
+          try {
+            Directory? directory;
+            if (Platform.isIOS) {
+              if (await _requestPermission(Permission.photos)) {}
+              final shareResult = await Share.shareXFiles([
+                XFile.fromData(
+                  cachedMemory.pictureBytes,
+                  name: 'flutter_logo.png',
+                  mimeType: 'image/png',
+                ),
+              ]);
+            } else if (Platform.isAndroid) {
+              await Share.shareXFiles([
+                XFile.fromData(cachedMemory.pictureBytes,
+                    name: 'did-it-${DateTime.now().toString()}.png',
+                    mimeType: 'image/png')
+              ]);
             }
-            if (!await directory.exists()) {
-              await directory.create(recursive: true);
-            }
-
-            File imgFile = File('${directory.path}assets/screenshot.png');
-            imgFile.writeAsBytes(cachedMemory.pictureBytes);
-
-            await Share.shareXFiles(
-                [XFile('${directory}assets/screenshot.png')]);
-            imgFile.delete();
+          } on PlatformException catch (e) {
+            print("Exception while taking screenshot:$e");
           }
         });
   }
@@ -178,15 +176,20 @@ class PhotoDetailState extends State<PhotoDetail> {
   }
 
   void _savePhoto() async {
-    final path;
     if (Platform.isAndroid) {
-      path = (await getExternalStorageDirectory())?.path;
-      final imgPath = '${path}assets/${cachedMemory.created}.png';
-      File imgFile = File(
-          '${path}assets/${cachedMemory.created}.png'); //FIXME: K čemu to je?
-      imgFile.writeAsBytes(cachedMemory.pictureBytes); //FIXME: K čemu to je?
-      await GallerySaver.saveImage(imgPath, albumName: 'DidIt');
-      imgFile.delete(); //FIXME: K čemu to je?
+      // final path = (await getExternalStorageDirectory())?.path;
+      // final imgPath = '$path/assets/${cachedMemory.lifetimeTag}.png';
+      // File imgFile = File(
+      //     '$path/assets/${cachedMemory.lifetimeTag}.png'); //FIXME: K čemu to je?
+      // imgFile.writeAsBytes(cachedMemory.pictureBytes);
+      //
+      // await FlutterExifRotation.rotateImage(path: imgPath);
+      // await ImageGallerySaver.saveFile(imgPath);
+      // imgFile.delete(); //FIXME: K čemu to je?
+      await ImageGallerySaver.saveImage(cachedMemory.pictureBytes);
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Saved into gallery")));
     } else if (Platform.isIOS) {
       if (await _requestPermission(Permission.photos)) {
         await ImageGallerySaver.saveImage(cachedMemory.pictureBytes);
