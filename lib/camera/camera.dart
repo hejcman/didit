@@ -274,7 +274,9 @@ class _CameraScreenState extends State<CameraScreen>
       color: Colors.white,
       onPressed: () async {
         try {
-          if (_enableVibration) {
+          if (Platform.isAndroid) {
+            Vibration.vibrate(duration: 60);
+          } else if (Platform.isIOS) {
             Vibration.vibrate(duration: 30);
           }
           // Attempt to take a picture
