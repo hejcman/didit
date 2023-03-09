@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:didit/camera/AWCamera.dart';
 import 'package:didit/common/platformization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -56,7 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         final List<Memory> memories;
                         if (Platform.isIOS) {
-                          memories = getMemories(categories[index], reversed: false);
+                          memories =
+                              getMemories(categories[index], reversed: false);
                         } else {
                           memories = getMemories(categories[index]);
                         }
@@ -77,7 +79,9 @@ class CaptureButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: () async {
-        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CameraScreen()));
+        //await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CameraScreen()));
+        await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const CameraPage())); //FIXME:
       },
       label: const Text('Capture'),
       icon: Icon(getCameraIcon()),
@@ -90,7 +94,11 @@ class OneCategory extends StatelessWidget {
   final List<Memory> memories;
   final Box<Memory> box;
 
-  OneCategory({super.key, required this.tag, required this.memories, required this.box});
+  OneCategory(
+      {super.key,
+      required this.tag,
+      required this.memories,
+      required this.box});
 
   @override
   Widget build(BuildContext context) {
@@ -121,10 +129,12 @@ class OneCategory extends StatelessWidget {
         child: GridView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: memories!.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2),
             itemBuilder: (BuildContext context, index) {
               Memory memory = memories![index];
-              return CustomPhotoTile(memory: memory, memories: memories, index: index);
+              return CustomPhotoTile(
+                  memory: memory, memories: memories, index: index);
             }),
       )
     ]);
@@ -132,7 +142,11 @@ class OneCategory extends StatelessWidget {
 }
 
 class CustomPhotoTile extends StatelessWidget {
-  const CustomPhotoTile({super.key, required this.memory, required this.memories, required this.index});
+  const CustomPhotoTile(
+      {super.key,
+      required this.memory,
+      required this.memories,
+      required this.index});
 
   final Memory memory;
   final List<Memory> memories;
@@ -143,7 +157,8 @@ class CustomPhotoTile extends StatelessWidget {
     return GestureDetector(
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => PhotoDetail(index: index, memories: [for (final m in memories) m.key])));
+              builder: (context) => PhotoDetail(
+                  index: index, memories: [for (final m in memories) m.key])));
         },
         child: Container(
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
