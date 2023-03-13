@@ -79,9 +79,9 @@ class CaptureButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: () async {
-        //await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CameraScreen()));
-        await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const CameraPage())); //FIXME:
+        await Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const CameraScreen()));
+        //await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CameraPage())); //FIXME:
       },
       label: const Text('Capture'),
       icon: Icon(getCameraIcon()),
