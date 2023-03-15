@@ -9,6 +9,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
+// Localization
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 // Settings
 import 'globals.dart' as globals;
 
@@ -23,6 +27,9 @@ import 'onboarding/onboarding.dart';
 
 // Home page
 import 'home/homeScreen.dart';
+
+//Localization
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> main(List<String> args) async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -44,7 +51,8 @@ Future<void> main(List<String> args) async {
   }
   final key = await secureStorage.read(key: 'hiveKey');
   final encryptionKey = base64Url.decode(key!);
-  globals.box = await Hive.openBox<Memory>(globals.dbName, encryptionCipher: HiveAesCipher(encryptionKey));
+  globals.box = await Hive.openBox<Memory>(globals.dbName,
+      encryptionCipher: HiveAesCipher(encryptionKey));
 
   // Prepare the default settings
   globals.prefs = await SharedPreferences.getInstance();
@@ -54,7 +62,8 @@ Future<void> main(List<String> args) async {
 
   // Launch the app
   FlutterNativeSplash.remove();
-  runApp(MyApp(onboarding: globals.prefs.getBool(globals.Settings.showOnboarding.key)!));
+  runApp(MyApp(
+      onboarding: globals.prefs.getBool(globals.Settings.showOnboarding.key)!));
 }
 
 class MyApp extends StatefulWidget {
@@ -73,6 +82,13 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       initialRoute: widget.onboarding ? '/onboarding' : '/',
+      supportedLocales: const [Locale('en'), Locale('cs')],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       routes: {
         '/': (context) => const HomeScreen(),
         '/onboarding': (context) => const OnBoardingView(),

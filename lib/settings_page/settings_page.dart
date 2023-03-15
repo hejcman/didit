@@ -9,6 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Onboarding
 import '../onboarding/onboarding.dart';
 
+//Localization
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 // Globals
 import '../globals.dart';
 
@@ -34,17 +37,17 @@ class _SettingsPageState extends State<SettingsPage> {
   String resolutionToString(ResolutionPreset resolution) {
     switch (resolution) {
       case ResolutionPreset.low:
-        return "Low";
+        return AppLocalizations.of(context)!.quality_low;
       case ResolutionPreset.medium:
-        return "Medium";
+        return AppLocalizations.of(context)!.quality_medium;
       case ResolutionPreset.high:
-        return "High";
+        return AppLocalizations.of(context)!.quality_high;
       case ResolutionPreset.veryHigh:
-        return "Very High";
+        return AppLocalizations.of(context)!.quality_very_high;
       case ResolutionPreset.ultraHigh:
-        return "Ultra High";
+        return AppLocalizations.of(context)!.quality_ultra_high;
       case ResolutionPreset.max:
-        return "Max";
+        return AppLocalizations.of(context)!.quality_max;
     }
   }
 
@@ -95,7 +98,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   Navigator.pop(context);
                 },
               ),
-              title: const Text("Settings"),
+              title: Text(AppLocalizations.of(context)!.settings),
             ),
             body: ValueListenableBuilder(
               valueListenable: prefsUpdated,
@@ -106,7 +109,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     Card(
                         child: ListTile(
                       leading: Icon(getImageIcon()),
-                      title: Text("Picture quality"),
+                      title:
+                          Text(AppLocalizations.of(context)!.picture_quality),
                       trailing: DropdownButton(
                         value: resolutions[
                             prefs.getInt(Settings.cameraQuality.key)!],
@@ -127,7 +131,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     Card(
                         child: ListTile(
                       leading: Icon(getVibrationIcon()),
-                      title: Text("Enable shutter vibration"),
+                      title:
+                          Text(AppLocalizations.of(context)!.enable_vibration),
                       trailing: Switch(
                           value: prefs.getBool(Settings.enableVibration.key)!,
                           onChanged: (value) {
@@ -141,7 +146,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: ListTile(
                         leading: Icon(getRepeatIcon()),
                         title: Text(
-                          "Reset to default",
+                          AppLocalizations.of(context)!.reset_default,
                           style: TextStyle(color: Colors.red),
                         ),
                         onTap: () {

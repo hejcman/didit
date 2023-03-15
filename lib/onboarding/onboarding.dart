@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+//Localization
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../globals.dart';
 
 class OnBoardingView extends StatefulWidget {
@@ -18,6 +21,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
   late PageController _pageController;
   int _pageIndex = 0;
   bool _lastPage = false;
+  List<OnBoardingSlide> onBoardingSlidesData = [];
 
   Future<void> changeFirstVisit() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -38,6 +42,33 @@ class _OnBoardingViewState extends State<OnBoardingView> {
 
   @override
   Widget build(BuildContext context) {
+    onBoardingSlidesData = [
+      OnBoardingSlide(
+        lottie: 'assets/lottie/take-a-photo.json',
+        title: AppLocalizations.of(context)!.onboarding_page_1_title,
+        description:
+            AppLocalizations.of(context)!.onboarding_page_1_description,
+      ),
+      OnBoardingSlide(
+        lottie: 'assets/lottie/time.json',
+        title: AppLocalizations.of(context)!.onboarding_page_2_title,
+        description:
+            AppLocalizations.of(context)!.onboarding_page_2_description,
+      ),
+      OnBoardingSlide(
+        lottie: 'assets/lottie/trash.json',
+        title: AppLocalizations.of(context)!.onboarding_page_3_title,
+        description:
+            AppLocalizations.of(context)!.onboarding_page_3_description,
+      ),
+      OnBoardingSlide(
+        lottie: 'assets/lottie/lets-begin.json',
+        title: AppLocalizations.of(context)!.onboarding_page_4_title,
+        description:
+            AppLocalizations.of(context)!.onboarding_page_4_description,
+      ),
+    ];
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
@@ -78,9 +109,12 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                         // style: ElevatedButton.styleFrom(shape: const CircleBorder()),
                         style: ButtonStyle(
                           //backgroundColor: MaterialStateProperty.all<Color?>(Colors.teal[700]),
-                          shape: MaterialStateProperty.all<CircleBorder?>(const CircleBorder()),
+                          shape: MaterialStateProperty.all<CircleBorder?>(
+                              const CircleBorder()),
                         ),
-                        child: Icon(_lastPage ? getCameraIcon() : getArrowForwardIcon()),
+                        child: Icon(_lastPage
+                            ? getCameraIcon()
+                            : getArrowForwardIcon()),
                       )),
                 ],
               )
@@ -138,34 +172,9 @@ class DotIndicator extends StatelessWidget {
 class Onboard {
   final String lottie, title, description;
 
-  Onboard({required this.lottie, required this.title, required this.description});
+  Onboard(
+      {required this.lottie, required this.title, required this.description});
 }
-
-final List<OnBoardingSlide> onBoardingSlidesData = [
-  const OnBoardingSlide(
-    lottie: 'assets/lottie/take-a-photo.json',
-    title: "Capture images of things you often forget about",
-    description: "Did I turn my stove off ?! We've all been there"
-        "...just take a picture and have a solid proof for your future self!",
-  ),
-  const OnBoardingSlide(
-    lottie: 'assets/lottie/time.json',
-    title: "How long to store those temporary photos?",
-    description: "You can select 1 day, a week or whole month. "
-        "It's just up to you.",
-  ),
-  const OnBoardingSlide(
-    lottie: 'assets/lottie/trash.json',
-    title: "After set expiration, expired photos will get deleted automatically!",
-    description: "So you don't need to worry about storage space anymore. "
-        "You can store your photos prior to the expiration.",
-  ),
-  const OnBoardingSlide(
-    lottie: 'assets/lottie/lets-begin.json',
-    title: "Lets begin using the App!",
-    description: "Are you ready? I am.",
-  ),
-];
 
 class OnBoardingSlide extends StatelessWidget {
   const OnBoardingSlide({
@@ -194,7 +203,7 @@ class OnBoardingSlide extends StatelessWidget {
           style: TextStyle(
             fontWeight: FontWeight.w500,
             color: Theme.of(context).colorScheme.onBackground,
-            fontSize: 32,
+            fontSize: 30,
           ),
         ),
         const SizedBox(height: 24),

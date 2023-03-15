@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:didit/common/tagWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -15,6 +16,9 @@ import '../photo_detail/photo_detail.dart';
 
 // Platformization
 import '../common/platformization.dart';
+
+//Localization
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GridGalleryScreen extends StatefulWidget {
   const GridGalleryScreen({super.key, required this.box, required this.tag});
@@ -36,8 +40,7 @@ class _GridGalleryScreenState extends State<GridGalleryScreen> {
             onPressed: () async {
               Navigator.pop(context);
             }),
-        title: widget.tag
-            .iconWidget(textColor: Theme.of(context).colorScheme.onBackground),
+        title: tagWidget(tag: widget.tag),
       ),
       body: ValueListenableBuilder(
           valueListenable: globals.box.listenable(),
@@ -50,7 +53,8 @@ class _GridGalleryScreenState extends State<GridGalleryScreen> {
             }
 
             if (box.isEmpty || memories.isEmpty) {
-              return const Center(child: Text("No images to show."));
+              return Center(
+                  child: Text(AppLocalizations.of(context)!.no_images));
             }
 
             return GridView.builder(

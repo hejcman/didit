@@ -1,0 +1,188 @@
+{
+    "didit" : "Didit",
+    "@didit" : {
+        "description" : "The app name"
+    },
+    
+    "language" : "English",
+    "@language" : {
+        "description" : "The current language"
+    },
+
+    "capture" : "Capture",
+    "@capture" : {
+        "description" : "Capture photo"
+    },
+
+    "error" : "Error",
+    "@error" : {
+        "description" : "Error message"
+    },
+
+    "ok" : "Ok",
+    "@ok" : {
+        "description" : "Ok message"
+    },
+
+    "unknown" : "unknown",
+    "@unknown" : {
+        "description" : "unknown time period"
+    },
+
+    "nDays": "{count, plural, =1{{count} day} other{{count} days}}",
+    "@nDays": {
+        "description": "A plural of days",
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+
+    "nHours": "{count, plural, =1{{count} hour} other{{count} hours}}",
+    "@nHours": {
+        "description": "A plural message of hours",
+        "placeholders": {
+            "count": {
+                "type": "num",
+                "format": "compact"
+            }
+        }
+    },
+
+    "all" : "all",
+    "@all" : {
+        "description":"All photos"
+    }, 
+
+    "settings":"Settings",
+    "@settings" : {
+        "description":"Settings of the app"
+    },
+
+    "send_feedback":"Send feedback",
+    "@send_feedback" : {
+        "description":"Send feedback to the developers"
+    },
+
+    "buy_coffee" : "Buy us a coffee",
+    "@buy_coffee" : {
+        "description":"Support the developers with a cup of coffee"
+    },
+
+    "relaunch_tutorial":"Relaunch tutorial",
+    "@relaunch_tutorial" : {
+        "description":"Relaunch tutorial of app usage"
+    },
+
+    "picture_quality" : "Picture quality",
+    "@picture_quality" : {
+        "description" : "Preset of quality of taken pictures"
+    },
+
+    "quality_max":"Max",
+    "@quality_max" : {
+        "description":"Maximum photo quality"
+    },
+
+    "quality_ultra_high":"Ultra high",
+    "@quality_ultra_high" : {
+        "description":"Ultra high photo quality"
+    },
+
+    "quality_very_high":"Very high",
+    "@quality_very_high" : {
+        "description":"Very high photo quality"
+    },
+
+    "quality_high":"High",
+    "@quality_high" : {
+        "description":"High photo quality"
+    },
+
+    "quality_medium":"Meduim",
+    "@quality_medium" : {
+        "description":"Medium photo quality"
+    },
+
+    "quality_low":"Low",
+    "@quality_low" : {
+        "description":"Low photo quality"
+    },
+
+    "enable_vibration":"Shutter vibration",
+    "@enable_vibration" : {
+        "description":"Vibration of pressing shutter"
+    },
+
+    "reset_default":"Reset to default",
+    "@reset_default" : {
+        "description":"Reset all settings to default"
+    },
+
+    "no_images":"No images to show",
+    "@no_images" : {
+        "description":"There are no images in the gallery to show"
+    },
+
+    "delete_in":"Delete in",
+    "@delete_in" : {
+        "description":"How mant days are letf before delete"
+    },
+
+    "question_delete":"Do you want to delete this photo?",
+    "@question_delete" : {
+        "description":"In modeal windows asking"
+    },
+
+    "delete":"Delete",
+    "@delete" : {
+        "description":"Delete the photo from local gallery"
+    },
+
+    "cancel":"Cancel",
+    "@cancel" : {
+        "description":"Cancel the action"
+    },
+
+    "onboarding_page_1_title":"Capture images of things you often forget about",
+    "@onboarding_page_1_title" : {
+        "description":"Capture images of things you often forget about"
+    },
+
+    "onboarding_page_1_description":"Did I turn my stove off ?! We've all been there ...just take a picture and have a solid proof for your future self!",
+    "@onboarding_page_1_description" : {
+        "description":"Did I turn my stove off ?! We've all been there ...just take a picture and have a solid proof for your future self!"
+    },
+
+    "onboarding_page_2_title":"How long to store those temporary photos?",
+    "@onboarding_page_2_title" : {
+        "description":"How long to store those temporary photos?"
+    },
+
+    "onboarding_page_2_description":"You can select 1 day, a week or whole month. It's just up to you.",
+    "@onboarding_page_2_description" : {
+        "description":"You can select 1 day, a week or whole month. It's just up to you."
+    },
+
+    "onboarding_page_3_title":"After set expiration, expired photos will get deleted automatically!",
+    "@onboarding_page_3_title" : {
+        "description":"After set expiration, expired photos will get deleted automatically!"
+    },
+
+    "onboarding_page_3_description":"So you don't need to worry about storage space anymore. You can store your photos prior to the expiration.",
+    "@onboarding_page_3_description" : {
+        "description":"So you don't need to worry about storage space anymore. You can store your photos prior to the expiration."
+    },
+
+    "onboarding_page_4_title":"Lets begin using the App!",
+    "@onboarding_page_4_title" : {
+        "description":"Lets begin using the App!"
+    },
+
+    "onboarding_page_4_description":"Are you ready? I am.",
+    "@onboarding_page_4_description" : {
+        "description":"Are you ready? I am."
+    }
+}

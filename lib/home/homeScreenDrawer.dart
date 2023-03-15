@@ -11,6 +11,9 @@ import 'package:didit/common/platformization.dart';
 import 'package:didit/onboarding/onboarding.dart';
 import 'package:didit/settings_page/settings_page.dart';
 
+//Localization
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class HomeScreenDrawer extends StatefulWidget {
   const HomeScreenDrawer({super.key});
 
@@ -33,17 +36,17 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
   String resolutionToString(ResolutionPreset resolution) {
     switch (resolution) {
       case ResolutionPreset.low:
-        return "Low";
+        return AppLocalizations.of(context)!.quality_low;
       case ResolutionPreset.medium:
-        return "Medium";
+        return AppLocalizations.of(context)!.quality_medium;
       case ResolutionPreset.high:
-        return "High";
+        return AppLocalizations.of(context)!.quality_high;
       case ResolutionPreset.veryHigh:
-        return "Very High";
+        return AppLocalizations.of(context)!.quality_very_high;
       case ResolutionPreset.ultraHigh:
-        return "Ultra High";
+        return AppLocalizations.of(context)!.quality_ultra_high;
       case ResolutionPreset.max:
-        return "Max";
+        return AppLocalizations.of(context)!.quality_max;
     }
   }
 
@@ -66,7 +69,7 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
                     children: <Widget>[
                       ListTile(
                         leading: Icon(getSettingsIcon()),
-                        title: const Text('Settings'),
+                        title: Text(AppLocalizations.of(context)!.settings),
                         onTap: () async {
                           await Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => const SettingsPage()));
@@ -74,17 +77,19 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
                       ),
                       ListTile(
                         leading: Icon(getFeedbackIcon()),
-                        title: const Text('Send feedback'),
+                        title:
+                            Text(AppLocalizations.of(context)!.send_feedback),
                         onTap: _launchEmail,
                       ),
                       ListTile(
                         leading: Icon(getFavouriteIcon()),
-                        title: const Text('Buy us a coffee'),
+                        title: Text(AppLocalizations.of(context)!.buy_coffee),
                         onTap: _launchBuyMeACoffeeUrl,
                       ),
                       ListTile(
                         leading: Icon(getListIcon()),
-                        title: const Text('Relaunch tutorial'),
+                        title: Text(
+                            AppLocalizations.of(context)!.relaunch_tutorial),
                         onTap: () async {
                           await Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => const OnBoardingView()));
@@ -100,7 +105,7 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
   }
 
   Future<void> _launchEmail() async {
-    const String emailAddress = "support@didit.com";
+    const String emailAddress = "didit@nacar.dev";
     const String subject = "DidIt - feedback";
     final url = Uri.parse('mailto:$emailAddress?subject=$subject');
     if (!await launchUrl(url)) {

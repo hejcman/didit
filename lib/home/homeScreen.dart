@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 // Globals
 import '../globals.dart' as globals;
+import 'package:didit/common/tagWidget.dart';
 
 // Camera
 import '../camera/camera.dart';
@@ -20,6 +21,9 @@ import '../photo_detail/photo_detail.dart';
 
 // Settings
 import 'package:didit/home/homeScreenDrawer.dart';
+
+//Localization
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,7 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 builder: (BuildContext context, Box<Memory> box, _) {
                   final isForeground = TickerMode.of(context);
                   if (!isForeground || box.isEmpty) {
-                    return const Center(child: Text("No images to show."));
+                    return Center(
+                        child: Text(AppLocalizations.of(context)!.no_images));
                   }
 
                   deleteOutdatedMemories();
@@ -56,7 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         final List<Memory> memories;
                         if (Platform.isIOS) {
-                          memories = getMemories(categories[index], reversed: false);
+                          memories =
+                              getMemories(categories[index], reversed: false);
                         } else {
                           memories = getMemories(categories[index]);
                         }
@@ -77,9 +83,10 @@ class CaptureButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: () async {
-        await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CameraScreen()));
+        await Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const CameraScreen()));
       },
-      label: const Text('Capture'),
+      label: Text(AppLocalizations.of(context)!.capture),
       icon: Icon(getCameraIcon()),
     );
   }
@@ -90,14 +97,18 @@ class OneCategory extends StatelessWidget {
   final List<Memory> memories;
   final Box<Memory> box;
 
-  OneCategory({super.key, required this.tag, required this.memories, required this.box});
+  OneCategory(
+      {super.key,
+      required this.tag,
+      required this.memories,
+      required this.box});
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
       Row(
         children: [
-          tag.iconWidget(textColor: Theme.of(context).colorScheme.onBackground),
+          tagWidget(tag: tag),
           const Spacer(),
           TextButton(
             onPressed: () async {
@@ -109,7 +120,7 @@ class OneCategory extends StatelessWidget {
             },
             child: Row(
               children: <Widget>[
-                const Text("all"),
+                Text(AppLocalizations.of(context)!.all),
                 Icon(getArrowForwardIcon(), size: 15),
               ],
             ),
@@ -121,10 +132,12 @@ class OneCategory extends StatelessWidget {
         child: GridView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: memories!.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2),
             itemBuilder: (BuildContext context, index) {
               Memory memory = memories![index];
-              return CustomPhotoTile(memory: memory, memories: memories, index: index);
+              return CustomPhotoTile(
+                  memory: memory, memories: memories, index: index);
             }),
       )
     ]);
@@ -132,7 +145,11 @@ class OneCategory extends StatelessWidget {
 }
 
 class CustomPhotoTile extends StatelessWidget {
-  const CustomPhotoTile({super.key, required this.memory, required this.memories, required this.index});
+  const CustomPhotoTile(
+      {super.key,
+      required this.memory,
+      required this.memories,
+      required this.index});
 
   final Memory memory;
   final List<Memory> memories;
@@ -143,7 +160,8 @@ class CustomPhotoTile extends StatelessWidget {
     return GestureDetector(
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => PhotoDetail(index: index, memories: [for (final m in memories) m.key])));
+              builder: (context) => PhotoDetail(
+                  index: index, memories: [for (final m in memories) m.key])));
         },
         child: Container(
             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
