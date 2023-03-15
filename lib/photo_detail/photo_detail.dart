@@ -21,6 +21,9 @@ import '../storage/schema.dart';
 // Globals
 import '../globals.dart' as globals;
 
+//Localization
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class PhotoDetail extends StatefulWidget {
   final List<dynamic> memories;
   final int index;
@@ -88,7 +91,10 @@ class PhotoDetailState extends State<PhotoDetail> {
         cornerRadius: 25,
         inactiveFgColor: Colors.white,
         borderWidth: 10.0,
-        labels: [for (final tag in LifetimeTag.values) tag.tagName()],
+        labels: [
+          for (final tag in LifetimeTag.values)
+            AppLocalizations.of(context)!.nDays(tag.tagToInt())
+        ],
         activeBgColors: [
           for (final tag in LifetimeTag.values) [tag.tagColor()]
         ],
@@ -150,7 +156,7 @@ class PhotoDetailState extends State<PhotoDetail> {
           showDialog<String>(
             context: context,
             builder: (BuildContext context) => AlertDialog(
-              title: const Text('Do you want to delete this photo?'),
+              title: Text(AppLocalizations.of(context)!.question_delete),
               actions: <Widget>[
                 TextButton(
                   onPressed: () async {
@@ -163,11 +169,11 @@ class PhotoDetailState extends State<PhotoDetail> {
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.pink,
                   ),
-                  child: const Text('Delete'),
+                  child: Text(AppLocalizations.of(context)!.delete),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'Cancel'),
-                  child: const Text('Cancel'),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
               ],
             ),
@@ -268,7 +274,9 @@ class PhotoDetailState extends State<PhotoDetail> {
                       valueListenable: timeToExpire,
                       builder:
                           (BuildContext context, String value, Widget? child) {
-                        return Text("Deleted in: ${timeToExpire.value}",
+                        return Text(
+                            AppLocalizations.of(context)!.delete_in +
+                                ": ${timeToExpire.value}",
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w300));

@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+//Localization
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../globals.dart';
 
 class OnBoardingView extends StatefulWidget {
@@ -78,9 +81,12 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                         // style: ElevatedButton.styleFrom(shape: const CircleBorder()),
                         style: ButtonStyle(
                           //backgroundColor: MaterialStateProperty.all<Color?>(Colors.teal[700]),
-                          shape: MaterialStateProperty.all<CircleBorder?>(const CircleBorder()),
+                          shape: MaterialStateProperty.all<CircleBorder?>(
+                              const CircleBorder()),
                         ),
-                        child: Icon(_lastPage ? getCameraIcon() : getArrowForwardIcon()),
+                        child: Icon(_lastPage
+                            ? getCameraIcon()
+                            : getArrowForwardIcon()),
                       )),
                 ],
               )
@@ -138,7 +144,8 @@ class DotIndicator extends StatelessWidget {
 class Onboard {
   final String lottie, title, description;
 
-  Onboard({required this.lottie, required this.title, required this.description});
+  Onboard(
+      {required this.lottie, required this.title, required this.description});
 }
 
 final List<OnBoardingSlide> onBoardingSlidesData = [
@@ -156,7 +163,8 @@ final List<OnBoardingSlide> onBoardingSlidesData = [
   ),
   const OnBoardingSlide(
     lottie: 'assets/lottie/trash.json',
-    title: "After set expiration, expired photos will get deleted automatically!",
+    title:
+        "After set expiration, expired photos will get deleted automatically!",
     description: "So you don't need to worry about storage space anymore. "
         "You can store your photos prior to the expiration.",
   ),

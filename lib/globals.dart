@@ -1,4 +1,3 @@
-
 import 'package:camera/camera.dart';
 import 'package:didit/storage/schema.dart';
 import 'package:hive/hive.dart';
@@ -18,11 +17,9 @@ const String dbName = "memories";
 /// The instance of the shared memory Box.
 late Box<Memory> box;
 
-
 ///// SETTINGS /////
 
 enum Settings {
-
   cameraQuality(
       key: "camera_quality",
       defaultValue: 3,
@@ -31,20 +28,22 @@ enum Settings {
   showOnboarding(
       key: "show_onboarding",
       defaultValue: true,
-      description: "Whether to show the onboarding screen on the next startup of the application."
-  ),
+      description:
+          "Whether to show the onboarding screen on the next startup of the application."),
 
   enableVibration(
       key: "enable_vibration",
       defaultValue: true,
-      description: "Whether to provide shutter feedback to the user using vibrations."
-  );
+      description:
+          "Whether to provide shutter feedback to the user using vibrations.");
 
   final String key;
   final dynamic defaultValue;
   final String description;
-  const Settings({ required this.key, required this.defaultValue, required this.description});
-
+  const Settings(
+      {required this.key,
+      required this.defaultValue,
+      required this.description});
 }
 
 /// Save the current defaults into the database.
@@ -55,7 +54,8 @@ enum Settings {
 void setDefaults(SharedPreferences prefs, {bool overwrite = false}) {
   for (final s in Settings.values) {
     final currentValue = prefs.get(s.key);
-    if ((currentValue == null) || (currentValue != s.defaultValue && overwrite)) {
+    if ((currentValue == null) ||
+        (currentValue != s.defaultValue && overwrite)) {
       switch (s.defaultValue.runtimeType) {
         case bool:
           prefs.setBool(s.key, s.defaultValue);

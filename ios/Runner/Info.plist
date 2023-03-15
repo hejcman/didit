@@ -14,6 +14,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>Czech</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>didit</string>
 	<key>CFBundlePackageType</key>
@@ -29,9 +34,9 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>To take temporary images inside the application.</string>
+	<string>Didit uses camera to take temporary photos, that you cant preview in the app.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to photo library so that photos can be download to local gallery</string>
+	<string>You can save photos taken in the app to the photos gallery.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIFileSharingEnabled</key>

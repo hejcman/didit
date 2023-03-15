@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 part 'schema.g.dart';
 
 @HiveType(typeId: 0)
@@ -29,25 +31,14 @@ extension LifetimeTagExtension on LifetimeTag {
     }
   }
 
-  String tagShortString() {
+  int tagToInt() {
     switch (this) {
       case LifetimeTag.oneDay:
-        return "1";
+        return 1;
       case LifetimeTag.sevenDays:
-        return "7";
+        return 7;
       case LifetimeTag.thirtyDays:
-        return "30";
-    }
-  }
-
-  String tagName() {
-    switch (this) {
-      case LifetimeTag.oneDay:
-        return "1 Day";
-      case LifetimeTag.sevenDays:
-        return "7 Days";
-      case LifetimeTag.thirtyDays:
-        return "30 Days";
+        return 30;
     }
   }
 
@@ -62,17 +53,6 @@ extension LifetimeTagExtension on LifetimeTag {
     }
   }
 
-  Widget iconWidget({Color? color, Color? textColor}) {
-    return Row(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-        child: Icon(getFlagIcon(), color: color ?? tagColor()),
-      ),
-      Text(tagName(),
-          style: TextStyle(color: textColor ?? (color ?? Colors.black)))
-    ]);
-  }
-
   Widget shortIconWidget({Color? color, Color? textColor}) {
     return Row(children: [
       Padding(
@@ -83,7 +63,7 @@ extension LifetimeTagExtension on LifetimeTag {
         ),
       ),
       Text(
-        tagShortString(),
+        "${tagToInt()}",
         style: TextStyle(color: textColor ?? (color ?? Colors.black)),
       )
     ]);
@@ -117,9 +97,9 @@ class Memory extends HiveObject {
     Duration timeToExpire =
         created.add(lifetimeTag.toDuration()).difference(DateTime.now());
     if (timeToExpire.inDays == 0) {
-      return "${timeToExpire.inHours} hours";
+      return "${timeToExpire.inHours} h";
     } else {
-      return "${timeToExpire.inDays} days";
+      return "${timeToExpire.inDays} d";
     }
   }
 

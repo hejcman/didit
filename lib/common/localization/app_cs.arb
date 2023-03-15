@@ -1,0 +1,44 @@
+{
+    "didit" : "Didit",
+    "language" : "Čeština",
+    "capture" : "Fotit",
+    "nDays": "{count, plural, =1{{count} den} =2{{count} dny} other{{count} dní}}",
+    "nHours": "{count, plural, =1{{count} hodina} =2{{count} hodiny} other{{count} hodin}}",
+    "all" : "vše",
+
+    "error": "Chyba",
+    "ok": "Ok",
+    "unknown": "neznámo",
+
+    "settings":"Nastavení",
+    "send_feedback":"Poslat zpětnou vazbu",
+    "buy_coffee" : "Podpoř nás kávou",
+    "relaunch_tutorial":"Znovu spustit tutorial",
+
+    "picture_quality" : "Kvalita fotografie",
+    "quality_max":"Maximální",
+    "quality_ultra_high":"Hodně vysoká",
+    "quality_very_high":"Vysoká",
+    "quality_high":"Vyšší",
+    "quality_medium":"Střední",
+    "quality_low":"Nízká",
+    "enable_vibration":"Vibrace spouště",
+    "reset_default":"Výchozí nastavení",
+
+    "no_images":"Žádné fotografie",
+
+    "delete_in":"Vyprší za",
+
+    "question_delete":"Opravdu chcete tuto fotofrafii smazat?",
+    "delete":"Smazat",
+    "cancel":"Zrušit",
+
+    "onboarding_page_1_title":"Často si nemůžeš vzpomenout, jestli jsi něco udělal?",
+    "onboarding_page_1_description":"Did I turn my stove off ?! We've all been there ...just take a picture and have a solid proof for your future self!",
+    "onboarding_page_2_title":"How long to store those temporary photos?",
+    "onboarding_page_2_description":"You can select 1 day, a week or whole month. It's just up to you.",
+    "onboarding_page_3_title":"After set expiration, expired photos will get deleted automatically!",
+    "onboarding_page_3_description":"So you don't need to worry about storage space anymore. You can store your photos prior to the expiration.",
+    "onboarding_page_4_title":"Lets begin using the App!",
+    "onboarding_page_4_description":"Are you ready? I am."
+}
