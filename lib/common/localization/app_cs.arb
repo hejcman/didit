@@ -33,12 +33,12 @@
     "delete":"Smazat",
     "cancel":"Zrušit",
 
-    "onboarding_page_1_title":"Často si nemůžeš vzpomenout, jestli jsi něco udělal?",
-    "onboarding_page_1_description":"Did I turn my stove off ?! We've all been there ...just take a picture and have a solid proof for your future self!",
-    "onboarding_page_2_title":"How long to store those temporary photos?",
-    "onboarding_page_2_description":"You can select 1 day, a week or whole month. It's just up to you.",
-    "onboarding_page_3_title":"After set expiration, expired photos will get deleted automatically!",
-    "onboarding_page_3_description":"So you don't need to worry about storage space anymore. You can store your photos prior to the expiration.",
-    "onboarding_page_4_title":"Lets begin using the App!",
-    "onboarding_page_4_description":"Are you ready? I am."
+   "onboarding_page_1_title":"Často si nemůžeš vzpomenout, jestli jsi něco udělal?",
+    "onboarding_page_1_description":"Vypl jsem troubu?! Všem se nám to stáva...prostě si to vyfoť, aby ses mohl ujistit!",
+    "onboarding_page_2_title":"Jak dlouho si chceš tyto fotky nechat?",
+    "onboarding_page_2_description":"Je to na tobě - vyber si den, týden, nebo měsíc.",
+    "onboarding_page_3_title":"Po expiraci této doby se fotky automaticky smažou.",
+    "onboarding_page_3_description":"Už se nemusíš prodírat galerií a fotky mazat, tato aplikace se o to postará. Pokud si fotky přece jen chceš nechat, můžeš si je trvale uložit.",
+    "onboarding_page_4_title":"Jdeme do toho!",
+    "onboarding_page_4_description":"Doufám, že jsi připravený!"
 }
