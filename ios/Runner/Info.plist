@@ -34,9 +34,11 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Didit uses camera to take temporary photos, that you cant preview in the app.</string>
+	<string>Didit uses the camera to take photos, that you can preview in the app and expires after the selected time period.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>You can save photos taken in the app to the photos gallery.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIFileSharingEnabled</key>
