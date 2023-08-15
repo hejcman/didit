@@ -81,11 +81,11 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
                             Text(AppLocalizations.of(context)!.send_feedback),
                         onTap: _launchEmail,
                       ),
-                      ListTile(
+                      /*                      ListTile(
                         leading: Icon(getFavouriteIcon()),
                         title: Text(AppLocalizations.of(context)!.buy_coffee),
                         onTap: _launchBuyMeACoffeeUrl,
-                      ),
+                      ),*/
                       ListTile(
                         leading: Icon(getListIcon()),
                         title: Text(
